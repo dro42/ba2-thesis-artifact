@@ -1,0 +1,40 @@
+# Istio DestinationRule - defines subsets for stable and canary
+# Argo Rollouts patches subset labels with rollouts-pod-template-hash at runtime
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: podinfo
+  namespace: podinfo
+spec:
+  host: podinfo.podinfo.svc.cluster.local
+  subsets:
+  - name: stable
+    labels:
+      app: podinfo
+  - name: canary
+    labels:
+      app: podinfo
+---
+# Istio VirtualService - Argo Rollouts manages the route weights
+# The route MUST have a name ("primary") that matches the Rollout spec
+# Initial state: 100% stable, 0% canary
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: podinfo
+  namespace: podinfo
+spec:
+  hosts:
+  - podinfo.podinfo.svc.cluster.local
+  - podinfo
+  http:
+  - name: primary
+    route:
+    - destination:
+        host: podinfo.podinfo.svc.cluster.local
+        subset: stable
+      weight: 100
+    - destination:
+        host: podinfo.podinfo.svc.cluster.local
+        subset: canary
+      weight: 0

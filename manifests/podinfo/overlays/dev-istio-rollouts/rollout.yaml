@@ -1,0 +1,133 @@
+# Argo Rollouts resource for podinfo canary deployment with Istio sidecar
+# Replaces the two-Deployment (stable/canary) pattern with a single Rollout
+# that manages both ReplicaSets and integrates with Istio VirtualService for traffic splitting
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: podinfo
+  namespace: podinfo
+  labels:
+    app: podinfo
+spec:
+  replicas: 3
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: podinfo
+  template:
+    metadata:
+      labels:
+        app: podinfo
+        version: v6.5.4
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9797"
+    spec:
+      containers:
+      - name: podinfo
+        image: ghcr.io/stefanprodan/podinfo:6.5.4
+        command:
+          - ./podinfo
+          - --level=info
+          - --port=9898
+          - --port-metrics=9797
+          - --grpc-port=9999
+          - --otel-service-name=podinfo
+        ports:
+        - containerPort: 9898
+          name: http
+          protocol: TCP
+        - containerPort: 9797
+          name: http-metrics
+          protocol: TCP
+        - containerPort: 9999
+          name: grpc
+          protocol: TCP
+        env:
+        - name: PODINFO_UI_COLOR
+          value: "#34577c"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://alloy.monitoring.svc.cluster.local:4317"
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: grpc
+        - name: OTEL_EXPORTER_OTLP_INSECURE
+          value: "true"
+        - name: OTEL_TRACES_SAMPLER
+          value: always_on
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.namespace=podinfo,service_mesh=istio,delivery=argo-rollouts"
+        - name: PYROSCOPE_SERVER_ADDRESS
+          value: "http://pyroscope.monitoring.svc:4040"
+        - name: PYROSCOPE_APPLICATION_NAME
+          value: "podinfo"
+        - name: PYROSCOPE_TAGS
+          value: "service_mesh=istio,delivery=argo-rollouts"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9898
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 9898
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+  strategy:
+    canary:
+      # Services that Argo Rollouts will manage selectors for
+      canaryService: podinfo-canary
+      stableService: podinfo-stable
+      # Istio traffic routing configuration
+      trafficRouting:
+        istio:
+          virtualServices:
+          - name: podinfo
+            routes:
+            - primary
+          destinationRule:
+            name: podinfo
+            canarySubsetName: canary
+            stableSubsetName: stable
+      # Progressive delivery steps
+      steps:
+      - setWeight: 10
+      - pause: {duration: 2m}
+      - analysis:
+          templates:
+          - templateName: istio-success-rate
+          args:
+          - name: service-name
+            value: podinfo-canary.podinfo.svc.cluster.local
+      - setWeight: 30
+      - pause: {duration: 2m}
+      - analysis:
+          templates:
+          - templateName: istio-success-rate
+          args:
+          - name: service-name
+            value: podinfo-canary.podinfo.svc.cluster.local
+      - setWeight: 50
+      - pause: {duration: 2m}
+      - analysis:
+          templates:
+          - templateName: istio-success-rate
+          args:
+          - name: service-name
+            value: podinfo-canary.podinfo.svc.cluster.local
+      - setWeight: 100
+      # Anti-affinity to spread stable and canary across nodes
+      antiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          weight: 100

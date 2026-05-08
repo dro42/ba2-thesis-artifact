@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-04-03T21:12:08Z",
+  "mesh_mode": "ambient",
+  "label": "post-experiment",
+  "pods": [{"name":"istio-cni-node-9l7ff","namespace":"istio-system","cpu":"1m","memory":"52Mi"},{"name":"istio-cni-node-gbsrc","namespace":"istio-system","cpu":"18m","memory":"21Mi"},{"name":"istiod-5c89c78fc-n49f4","namespace":"istio-system","cpu":"12m","memory":"73Mi"},{"name":"podinfo-public-gateway-istio-794fccf76b-swk4n","namespace":"istio-system","cpu":"4m","memory":"47Mi"},{"name":"ztunnel-ggzh2","namespace":"istio-system","cpu":"5m","memory":"6Mi"},{"name":"ztunnel-gjzmc","namespace":"istio-system","cpu":"4m","memory":"5Mi"},{"name":"podinfo-5c7754964f-4blj2","namespace":"podinfo-ambient","cpu":"1m","memory":"28Mi"},{"name":"podinfo-5c7754964f-g5crm","namespace":"podinfo-ambient","cpu":"1m","memory":"27Mi"},{"name":"podinfo-5c7754964f-x6hzw","namespace":"podinfo-ambient","cpu":"1m","memory":"28Mi"},{"name":"waypoint-787db5bcd4-94wfg","namespace":"podinfo-ambient","cpu":"12m","memory":"52Mi"}],
+  "nodes": [{"name":"relaxo","cpu":"1775m","cpu_percent":"44%","memory":"10602Mi","memory_percent":"65%"},{"name":"shiggy.local-8a371200","cpu":"1725m","cpu_percent":"43%","memory":"9702Mi","memory_percent":"59%"}]
+}

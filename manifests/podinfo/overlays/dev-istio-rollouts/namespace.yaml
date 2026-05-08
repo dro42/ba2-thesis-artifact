@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: podinfo
+  labels:
+    drozd.cloud/public-istio-gateway: enabled
+    istio-injection: enabled

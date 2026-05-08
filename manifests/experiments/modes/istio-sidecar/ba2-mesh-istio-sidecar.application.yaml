@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ba2-mesh-istio-sidecar
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: ba2-mesh-istio-sidecar
+    service-mesh: istio-sidecar
+    thesis-component: experiment-control
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://github.com/dro42/ba2-thesis-artifact.git
+    targetRevision: main
+    path: manifests/experiments/mesh/istio-sidecar
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+  info:
+    - name: "Mode"
+      value: "Istio sidecar"
+    - name: "Role"
+      value: "Deploys BA2-specific Istio component applications with ordered auto-sync"

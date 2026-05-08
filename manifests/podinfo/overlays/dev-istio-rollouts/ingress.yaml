@@ -1,0 +1,107 @@
+# Traefik Ingress for stable podinfo access via Istio sidecar mode
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo-stable-istio-rollouts
+  namespace: podinfo
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - "*.drozd.cloud"
+    secretName: drozd-cloud-wildcard
+  rules:
+  - host: stable-podinfo-istio-rollouts.drozd.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo-stable
+            port:
+              number: 80
+  - host: stable-podinfo-istio-rollouts.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo-stable
+            port:
+              number: 80
+---
+# Traefik Ingress for canary podinfo access via Istio sidecar mode
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo-canary-istio-rollouts
+  namespace: podinfo
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - "*.drozd.cloud"
+    secretName: drozd-cloud-wildcard
+  rules:
+  - host: canary-podinfo-istio-rollouts.drozd.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo-canary
+            port:
+              number: 80
+  - host: canary-podinfo-istio-rollouts.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo-canary
+            port:
+              number: 80
+---
+# Traefik Ingress for traffic-split access (uses root podinfo service)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo-split-istio-rollouts
+  namespace: podinfo
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - "*.drozd.cloud"
+    secretName: drozd-cloud-wildcard
+  rules:
+  - host: podinfo-istio-rollouts.drozd.cloud
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo
+            port:
+              number: 80
+  - host: podinfo-istio-rollouts.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: podinfo
+            port:
+              number: 80

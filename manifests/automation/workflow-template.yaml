@@ -1,0 +1,164 @@
+# WorkflowTemplates for manual triggering and testing of the podinfo failover pipeline
+# These mirror the inline workflow specs in sensor-failover.yaml and can be triggered via:
+#   argo submit --from workflowtemplate/podinfo-failover-sidecar -n argo-events
+#   argo submit --from workflowtemplate/podinfo-failover-ambient -n argo-events
+---
+# Sidecar mode: validates via destination_app + namespace labels
+# (robust across Argo Rollouts service attribution changes)
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: podinfo-failover-sidecar
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: failover-pipeline
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo
+    - name: prometheus-url
+      value: http://grafana-prometheus-stack-k-prometheus.monitoring.svc.cluster.local:9090
+    - name: mesh-mode
+      value: sidecar
+  templates:
+  - name: failover-pipeline
+    steps:
+    - - name: validate-stable-unhealthy
+        template: check-health-sidecar
+        arguments:
+          parameters:
+          - name: error-threshold
+            value: "5"
+    - - name: promote-canary
+        template: promote-rollout
+
+  # Health check for sidecar mode — uses destination_app label which is
+  # stable regardless of Argo Rollouts service attribution
+  - name: check-health-sidecar
+    inputs:
+      parameters:
+      - name: error-threshold
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        set -e
+        PROM="{{workflow.parameters.prometheus-url}}"
+        THRESHOLD={{inputs.parameters.error-threshold}}
+        echo "=== Health check: podinfo in podinfo namespace ==="
+
+        # Query error rate using destination_app (robust across rollout state)
+        ERROR_QUERY='100 * sum(rate(istio_requests_total{destination_app="podinfo",destination_workload_namespace="podinfo",response_code=~"5.*",reporter="destination"}[1m])) / sum(rate(istio_requests_total{destination_app="podinfo",destination_workload_namespace="podinfo",reporter="destination"}[1m]))'
+
+        RESPONSE=$(curl -sf "$PROM/api/v1/query" --data-urlencode "query=${ERROR_QUERY}" 2>/dev/null || echo '{"data":{"result":[]}}')
+
+        # Extract value using grep/sed (no python3 in curl image)
+        ERROR_PCT=$(echo "$RESPONSE" | grep -oE '"value":\[[^,]+,"[^"]*"' | head -1 | sed 's/.*,"\([^"]*\)"/\1/' || echo "0")
+        echo "Error rate: ${ERROR_PCT}%"
+
+        # Compare as integers (strip decimal)
+        ERROR_INT=$(echo "$ERROR_PCT" | cut -d. -f1)
+        ERROR_INT=${ERROR_INT:-0}
+
+        if [ "$ERROR_INT" -ge "$THRESHOLD" ]; then
+          echo "CONFIRMED: Error rate ${ERROR_PCT}% >= ${THRESHOLD}%. Stable is degraded."
+          exit 0
+        else
+          echo "SAFE: Error rate ${ERROR_PCT}% < ${THRESHOLD}%. No failover needed."
+          exit 1
+        fi
+
+  - name: promote-rollout
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - promote
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+      - --full
+
+---
+# Ambient mode: validates via service name + namespace labels
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: podinfo-failover-ambient
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: failover-pipeline
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo-ambient
+    - name: prometheus-url
+      value: http://grafana-prometheus-stack-k-prometheus.monitoring.svc.cluster.local:9090
+    - name: mesh-mode
+      value: ambient
+  templates:
+  - name: failover-pipeline
+    steps:
+    - - name: validate-stable-unhealthy
+        template: check-health-ambient
+        arguments:
+          parameters:
+          - name: error-threshold
+            value: "5"
+    - - name: promote-canary
+        template: promote-rollout
+
+  # Health check for ambient mode — uses destination_service_name + namespace
+  - name: check-health-ambient
+    inputs:
+      parameters:
+      - name: error-threshold
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        set -e
+        PROM="{{workflow.parameters.prometheus-url}}"
+        THRESHOLD={{inputs.parameters.error-threshold}}
+        echo "=== Health check: podinfo-stable in podinfo-ambient ==="
+
+        ERROR_QUERY='100 * sum(rate(istio_requests_total{destination_service_name="podinfo-stable",destination_service_namespace="podinfo-ambient",response_code=~"5.*"}[1m])) / sum(rate(istio_requests_total{destination_service_name="podinfo-stable",destination_service_namespace="podinfo-ambient"}[1m]))'
+
+        RESPONSE=$(curl -sf "$PROM/api/v1/query" --data-urlencode "query=${ERROR_QUERY}" 2>/dev/null || echo '{"data":{"result":[]}}')
+
+        ERROR_PCT=$(echo "$RESPONSE" | grep -oE '"value":\[[^,]+,"[^"]*"' | head -1 | sed 's/.*,"\([^"]*\)"/\1/' || echo "0")
+        echo "Error rate: ${ERROR_PCT}%"
+
+        ERROR_INT=$(echo "$ERROR_PCT" | cut -d. -f1)
+        ERROR_INT=${ERROR_INT:-0}
+
+        if [ "$ERROR_INT" -ge "$THRESHOLD" ]; then
+          echo "CONFIRMED: Error rate ${ERROR_PCT}% >= ${THRESHOLD}%. Stable is degraded."
+          exit 0
+        else
+          echo "SAFE: Error rate ${ERROR_PCT}% < ${THRESHOLD}%. No failover needed."
+          exit 1
+        fi
+
+  - name: promote-rollout
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - promote
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+      - --full

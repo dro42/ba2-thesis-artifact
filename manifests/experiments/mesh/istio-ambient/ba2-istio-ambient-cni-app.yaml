@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ba2-istio-ambient-cni
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: ba2-istio-ambient-cni
+    service-mesh: istio-ambient
+    thesis-component: experiment-control
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: cni
+    targetRevision: 1.29.1
+    helm:
+      releaseName: istio-ambient-cni
+      values: |
+        profile: ambient
+
+        global:
+          istioNamespace: istio-system
+          platform: k3s
+
+        cni:
+          ambient:
+            enabled: true
+          excludeNamespaces:
+            - kube-system
+            - istio-system
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

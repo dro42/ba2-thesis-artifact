@@ -1,0 +1,361 @@
+# Canary Abort Test WorkflowTemplate — validates Argo Rollouts automatic abort
+#
+# Tests that canary failure triggers automatic rollout abort:
+#   1. Reset to clean state (abort any existing canary, set stable image)
+#   2. Trigger canary rollout (set canary image)
+#   3. Wait for rollout to reach canary step with traffic weight
+#   4. Inject 5xx errors on canary service + maintain normal traffic volume
+#   5. Wait for Argo Rollouts analysis to detect failure and abort
+#   6. Collect results (Prometheus metrics, rollout status, timestamps)
+#   7. onExit: always reset to stable image
+#
+# Usage:
+#   argo submit --from workflowtemplate/canary-abort-test -n argo-events
+#   argo submit --from workflowtemplate/canary-abort-test -n argo-events \
+#     -p canary-image=ghcr.io/stefanprodan/podinfo:6.6.0 -p fault-duration=180
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: canary-abort-test
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+    thesis-component: canary-abort-test
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: canary-abort-pipeline
+  onExit: cleanup
+
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo-ambient
+    - name: stable-image
+      value: ghcr.io/stefanprodan/podinfo:6.5.4
+    - name: canary-image
+      value: ghcr.io/stefanprodan/podinfo:6.6.0
+    - name: prometheus-url
+      value: http://grafana-prometheus-stack-k-prometheus.monitoring.svc.cluster.local:9090
+    - name: fault-duration
+      value: "180"
+
+  templates:
+
+  # ── Main pipeline ────────────────────────────────────────────────────────────
+  - name: canary-abort-pipeline
+    steps:
+    # Phase 1: Setup — ensure clean state
+    - - name: abort-any-canary
+        template: abort-rollout
+        continueOn:
+          failed: true
+    - - name: reset-to-stable
+        template: set-rollout-image
+        arguments:
+          parameters:
+          - name: image
+            value: "{{workflow.parameters.stable-image}}"
+        continueOn:
+          failed: true
+    - - name: wait-for-healthy
+        template: wait-rollout-phase
+        arguments:
+          parameters:
+          - name: target-phase
+            value: Healthy
+          - name: timeout
+            value: "120"
+
+    # Phase 2: Trigger canary
+    - - name: trigger-canary
+        template: set-rollout-image
+        arguments:
+          parameters:
+          - name: image
+            value: "{{workflow.parameters.canary-image}}"
+    - - name: wait-for-canary-running
+        template: wait-rollout-phase
+        arguments:
+          parameters:
+          - name: target-phase
+            value: Progressing
+          - name: timeout
+            value: "60"
+    - - name: wait-for-traffic-weight
+        template: wait-for-weight
+        arguments:
+          parameters:
+          - name: timeout
+            value: "300"
+
+    # Phase 3: Inject failure (concurrent normal + error traffic)
+    - - name: inject-failure
+        template: fault-injection-dag
+
+    # Phase 4: Observe abort
+    - - name: wait-for-abort
+        template: wait-rollout-phase
+        arguments:
+          parameters:
+          - name: target-phase
+            value: Degraded
+          - name: timeout
+            value: "600"
+
+    # Phase 5: Collect results
+    - - name: collect-results
+        template: collect-and-report
+
+  # ── Step templates ──────────────────────────────────────────────────────────
+
+  - name: abort-rollout
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - abort
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+
+  - name: set-rollout-image
+    inputs:
+      parameters:
+      - name: image
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - set
+      - image
+      - "{{workflow.parameters.rollout-name}}"
+      - "{{workflow.parameters.rollout-name}}={{inputs.parameters.image}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+
+  - name: wait-rollout-phase
+    inputs:
+      parameters:
+      - name: target-phase
+      - name: timeout
+    activeDeadlineSeconds: 660
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        TARGET="{{inputs.parameters.target-phase}}"
+        TIMEOUT={{inputs.parameters.timeout}}
+
+        echo "=== Waiting for rollout phase: $TARGET (timeout: ${TIMEOUT}s) ==="
+
+        i=0
+        while [ $i -lt $TIMEOUT ]; do
+          PHASE=$(curl -sf --cacert $CA -H "Authorization: Bearer $TOKEN" \
+            "$K8S/apis/argoproj.io/v1alpha1/namespaces/{{workflow.parameters.rollout-namespace}}/rollouts/{{workflow.parameters.rollout-name}}" \
+            2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',{}).get('phase','?'))" 2>/dev/null || echo "?")
+
+          echo "[$(date +%H:%M:%S)] Phase: $PHASE (waiting for: $TARGET)"
+
+          if [ "$PHASE" = "$TARGET" ]; then
+            echo "Target phase reached: $TARGET"
+            exit 0
+          fi
+
+          i=$((i + 5))
+          sleep 5
+        done
+
+        echo "TIMEOUT: Phase did not reach $TARGET within ${TIMEOUT}s (last: $PHASE)"
+        exit 1
+
+  - name: wait-for-weight
+    inputs:
+      parameters:
+      - name: timeout
+    activeDeadlineSeconds: 360
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        TIMEOUT={{inputs.parameters.timeout}}
+
+        echo "=== Waiting for canary to receive traffic weight > 0 ==="
+
+        i=0
+        while [ $i -lt $TIMEOUT ]; do
+          ROLLOUT=$(curl -sf --cacert $CA -H "Authorization: Bearer $TOKEN" \
+            "$K8S/apis/argoproj.io/v1alpha1/namespaces/{{workflow.parameters.rollout-namespace}}/rollouts/{{workflow.parameters.rollout-name}}" \
+            2>/dev/null)
+
+          CANARY_WEIGHT=$(echo "$ROLLOUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',{}).get('canary',{}).get('weights',{}).get('canary',{}).get('weight',0))" 2>/dev/null || echo "0")
+
+          STEP=$(echo "$ROLLOUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',{}).get('currentStepIndex','?'))" 2>/dev/null || echo "?")
+
+          echo "[$(date +%H:%M:%S)] Canary weight: $CANARY_WEIGHT, Step: $STEP"
+
+          if [ "$CANARY_WEIGHT" != "0" ] && [ "$CANARY_WEIGHT" != "" ]; then
+            echo "Canary has traffic weight: $CANARY_WEIGHT"
+            exit 0
+          fi
+
+          i=$((i + 5))
+          sleep 5
+        done
+
+        echo "TIMEOUT: Canary never received traffic weight within ${TIMEOUT}s"
+        exit 1
+
+  # DAG: run normal traffic and error traffic concurrently
+  - name: fault-injection-dag
+    dag:
+      tasks:
+      - name: normal-traffic
+        template: generate-normal-traffic
+      - name: error-traffic
+        template: generate-error-traffic
+
+  - name: generate-normal-traffic
+    activeDeadlineSeconds: 300
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        SVC="http://podinfo.{{workflow.parameters.rollout-namespace}}.svc.cluster.local:80"
+        DURATION={{workflow.parameters.fault-duration}}
+
+        echo "=== Normal traffic generation (${DURATION}s) ==="
+        echo "Target: $SVC"
+
+        COUNT=0
+        END=$(($(date +%s) + DURATION))
+
+        while [ $(date +%s) -lt $END ]; do
+          curl -sf -o /dev/null --max-time 2 "$SVC/" 2>/dev/null
+          COUNT=$((COUNT + 1))
+          [ $((COUNT % 50)) -eq 0 ] && echo "[$(date +%H:%M:%S)] Normal requests sent: $COUNT"
+          sleep 0.5
+        done
+
+        echo "Normal traffic done: $COUNT requests"
+
+  - name: generate-error-traffic
+    activeDeadlineSeconds: 300
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        CANARY_SVC="http://podinfo-canary.{{workflow.parameters.rollout-namespace}}.svc.cluster.local:80"
+        DURATION={{workflow.parameters.fault-duration}}
+
+        echo "=== Error traffic injection (${DURATION}s) ==="
+        echo "Target: $CANARY_SVC/status/500"
+
+        COUNT=0
+        ERRORS=0
+        END=$(($(date +%s) + DURATION))
+
+        while [ $(date +%s) -lt $END ]; do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "$CANARY_SVC/status/500" 2>/dev/null || echo "000")
+          COUNT=$((COUNT + 1))
+          [ "$STATUS" = "500" ] && ERRORS=$((ERRORS + 1))
+          if [ $((COUNT % 50)) -eq 0 ]; then
+            PCT=$(( ERRORS * 100 / COUNT ))
+            echo "[$(date +%H:%M:%S)] Requests: $COUNT | 500s: $ERRORS (${PCT}%)"
+          fi
+          sleep 0.3
+        done
+
+        PCT=$(( ERRORS * 100 / COUNT ))
+        echo "Error injection done: $COUNT requests, $ERRORS returned 500 (${PCT}%)"
+
+  - name: collect-and-report
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        PROM={{workflow.parameters.prometheus-url}}
+        NS={{workflow.parameters.rollout-namespace}}
+
+        echo "============================================"
+        echo "  Canary Abort Test Results"
+        echo "============================================"
+        echo ""
+
+        # Get rollout status
+        ROLLOUT=$(curl -sf --cacert $CA -H "Authorization: Bearer $TOKEN" \
+          "$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}" 2>/dev/null)
+
+        PHASE=$(echo "$ROLLOUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',{}).get('phase','?'))" 2>/dev/null || echo "?")
+        MSG=$(echo "$ROLLOUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',{}).get('message',''))" 2>/dev/null || echo "")
+        STABLE_W=$(echo "$ROLLOUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',{}).get('canary',{}).get('weights',{}).get('stable',{}).get('weight','?'))" 2>/dev/null || echo "?")
+        CANARY_W=$(echo "$ROLLOUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',{}).get('canary',{}).get('weights',{}).get('canary',{}).get('weight','?'))" 2>/dev/null || echo "?")
+
+        echo "Mesh Mode:       Istio Ambient"
+        echo "Application:     podinfo ($NS)"
+        echo "Stable Image:    {{workflow.parameters.stable-image}}"
+        echo "Canary Image:    {{workflow.parameters.canary-image}}"
+        echo ""
+        echo "Rollout Phase:   $PHASE"
+        echo "Rollout Message: $MSG"
+        echo "Stable Weight:   $STABLE_W"
+        echo "Canary Weight:   $CANARY_W"
+        echo ""
+
+        # Query Prometheus for canary error rate
+        QUERY="sum by (response_code)(rate(istio_requests_total{destination_service_name=\"podinfo-canary\",destination_service_namespace=\"$NS\"}[5m]))"
+        METRICS=$(curl -sf "$PROM/api/v1/query" --data-urlencode "query=$QUERY" 2>/dev/null)
+
+        echo "Prometheus Canary Metrics (5m rate):"
+        echo "$METRICS" | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f'  response_code={r[\"metric\"].get(\"response_code\",\"?\")}: {float(r[\"value\"][1]):.4f} req/s') for r in d['data']['result']]" 2>/dev/null || echo "  (no data or query failed)"
+
+        echo ""
+
+        # Determine result
+        if [ "$PHASE" = "Degraded" ]; then
+          echo "RESULT: PASS"
+          echo "  Rollout aborted automatically after canary failure detection."
+          echo "  Traffic switched to 100% stable."
+        else
+          echo "RESULT: FAIL"
+          echo "  Expected phase=Degraded, got phase=$PHASE"
+        fi
+
+        echo ""
+        echo "============================================"
+
+  # ── onExit handler — always runs ─────────────────────────────────────────────
+  - name: cleanup
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [sh, -c]
+      args:
+      - |
+        echo "=== onExit: Resetting rollout to stable image ==="
+        kubectl-argo-rollouts set image \
+          {{workflow.parameters.rollout-name}} \
+          {{workflow.parameters.rollout-name}}={{workflow.parameters.stable-image}} \
+          -n {{workflow.parameters.rollout-namespace}} || true
+
+        echo "Waiting 5s for reconciliation..."
+        sleep 5
+
+        echo "Final rollout status:"
+        kubectl-argo-rollouts get rollout \
+          {{workflow.parameters.rollout-name}} \
+          -n {{workflow.parameters.rollout-namespace}} 2>/dev/null || echo "(unable to get status)"

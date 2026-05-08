@@ -1,0 +1,42 @@
+# Argo Events - Event-driven automation for Kubernetes
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-events
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: argo-platform
+    app.kubernetes.io/name: argo-events
+    app.kubernetes.io/component: eventing
+    thesis-component: automation
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argo-events
+    targetRevision: 2.4.20
+    helm:
+      values: |
+        global:
+          image:
+            repository: quay.io/argoproj/argo-events
+            tag: v1.9.10
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argo-events
+
+  syncPolicy:
+    # Manual sync as requested
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

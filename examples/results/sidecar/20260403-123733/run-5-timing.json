@@ -1,0 +1,29 @@
+{
+  "experiment_id": "8f0b00c8-f503-4862-ba08-cadff6ccb95d",
+  "timestamp": "2026-04-03T13:42:38Z",
+  "mesh_mode": "sidecar",
+  "fault_percentage": 80,
+  "traffic_duration_s": 150,
+  "timing": {
+    "t0_fault_injected": 1775223283,
+    "t1_alert_pending": 1775223320,
+    "t2_alert_firing": 1775223388,
+    "t4_failover_workflow": "name=podinfo-failover-sidecar-vlf8l[0]",
+    "t5_collection": 1775223758
+  },
+  "deltas_seconds": {
+    "t0_to_t1": 37,
+    "t1_to_t2": 68,
+    "t0_to_t2": 105,
+    "t0_to_t5": 475
+  },
+  "metrics_snapshot": {
+    "stable_error_rate": "0.35737106344135094",
+    "stable_p99_latency_ms": "4.808397291196388"
+  },
+  "rollout": {
+    "phase": "Healthy",
+    "message": "Rollout has minimum availability"
+  },
+  "outcome": "remediated"
+}

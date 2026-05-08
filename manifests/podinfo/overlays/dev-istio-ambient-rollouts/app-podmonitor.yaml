@@ -1,0 +1,34 @@
+# PodMonitor to scrape Podinfo application metrics from rollout pods
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: podinfo-app-metrics
+  namespace: podinfo-ambient
+  labels:
+    app: podinfo
+    metrics-role: application
+spec:
+  selector:
+    matchLabels:
+      app: podinfo
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      relabelings:
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_label_version]
+          targetLabel: version
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_controller_name]
+          targetLabel: deployment
+        - action: replace
+          targetLabel: job
+          replacement: prometheus.scrape.pods
+  namespaceSelector:
+    matchNames:
+      - podinfo-ambient

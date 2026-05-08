@@ -1,0 +1,29 @@
+{
+  "experiment_id": "5f34dfe5-4b37-4ef2-b1a0-d0345d4a87be",
+  "timestamp": "2026-04-03T19:52:21Z",
+  "mesh_mode": "ambient",
+  "fault_percentage": 80,
+  "traffic_duration_s": 150,
+  "timing": {
+    "t0_fault_injected": 1775245464,
+    "t1_alert_pending": 1775245505,
+    "t2_alert_firing": 1775245571,
+    "t4_failover_workflow": "name=podinfo-failover-ambient-nv7tr[0]",
+    "t5_collection": 1775245940
+  },
+  "deltas_seconds": {
+    "t0_to_t1": 41,
+    "t1_to_t2": 66,
+    "t0_to_t2": 107,
+    "t0_to_t5": 476
+  },
+  "metrics_snapshot": {
+    "stable_error_rate": "0.815565729234794",
+    "stable_p99_latency_ms": "21.72916666666665"
+  },
+  "rollout": {
+    "phase": "Healthy",
+    "message": "Rollout has minimum availability"
+  },
+  "outcome": "remediated"
+}

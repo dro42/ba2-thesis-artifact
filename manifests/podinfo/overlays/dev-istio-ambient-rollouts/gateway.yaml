@@ -1,0 +1,31 @@
+# Istio Gateway API ingress for podinfo external access (ambient mode)
+# Replaces Traefik Ingress — Istio auto-provisions a gateway pod
+# Uses ClusterIP to avoid port conflicts with Traefik on k3s
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: podinfo-gateway
+  namespace: podinfo-ambient
+  annotations:
+    # ClusterIP avoids svclb/klipper conflicts with Traefik on ports 80/443
+    networking.istio.io/service-type: ClusterIP
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: https
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: drozd-cloud-wildcard
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: Same

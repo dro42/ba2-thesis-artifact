@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd
+
+resources:
+  - ba2-istio-ambient-base-app.yaml
+  - ba2-istio-ambient-istiod-app.yaml
+  - ba2-istio-ambient-cni-app.yaml
+  - ba2-istio-ambient-ztunnel-app.yaml
+  - ba2-istio-ambient-telemetry-app.yaml

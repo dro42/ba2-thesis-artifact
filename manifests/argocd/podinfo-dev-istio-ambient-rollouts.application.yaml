@@ -1,0 +1,61 @@
+# ArgoCD Application for Podinfo with Argo Rollouts - Istio Ambient
+# MANUAL SYNC ONLY - Do not enable automated sync
+# Sync: argocd app sync podinfo-dev-istio-ambient-rollouts
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podinfo-dev-istio-ambient-rollouts
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://github.com/dro42/ba2-thesis-artifact.git
+    targetRevision: main
+    path: manifests/podinfo/overlays/dev-istio-ambient-rollouts
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: podinfo-ambient
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+  # Argo Rollouts Gateway API plugin modifies HTTPRoute weights at runtime
+  # Rollouts also patches Service selectors
+  ignoreDifferences:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    jqPathExpressions:
+    - .spec.rules[].backendRefs[].weight
+  - group: ""
+    kind: Service
+    jqPathExpressions:
+    - .spec.selector
+  - group: argoproj.io
+    kind: Rollout
+    jqPathExpressions:
+    - .metadata.annotations."rollout.argoproj.io/revision"
+    - .spec.restartAt
+    - .spec.strategy.canary.steps[].analysis.analysisRunMetadata
+
+  info:
+  - name: 'Implementation'
+    value: 'Argo Rollouts + Istio Ambient (Gateway API HTTPRoute + Waypoint)'
+  - name: 'Requirement'
+    value: 'Requires Istio ambient components and Argo Rollouts with Gateway API plugin'
+  - name: 'Mutual Exclusion'
+    value: 'Do not run together with podinfo-dev-istio-ambient or sidecar overlays'

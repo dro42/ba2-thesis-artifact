@@ -1,0 +1,91 @@
+# ArgoCD Project for Bachelor Thesis
+# Organizes all BA2-related applications (monitoring, service meshes, etc.)
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ba2
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Bachelor Thesis 2
+
+  # Source repositories that applications in this project can use
+  sourceRepos:
+    - '*'  # Allow any Helm repository for service meshes
+
+  # Destinations where applications can be deployed
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+
+  # Cluster resource whitelist (what can be created)
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRole
+    - group: 'rbac.authorization.k8s.io'
+      kind: ClusterRoleBinding
+    - group: 'apiextensions.k8s.io'
+      kind: CustomResourceDefinition
+    - group: 'admissionregistration.k8s.io'
+      kind: MutatingWebhookConfiguration
+    - group: 'admissionregistration.k8s.io'
+      kind: ValidatingWebhookConfiguration
+    - group: 'policy'
+      kind: PodSecurityPolicy
+    - group: 'monitoring.coreos.com'
+      kind: ServiceMonitor
+    - group: 'monitoring.coreos.com'
+      kind: PrometheusRule
+    # cert-manager resources for service mesh certificate management
+    - group: 'cert-manager.io'
+      kind: ClusterIssuer
+    # Ingress
+    - group: 'networking.k8s.io'
+      kind: Ingress
+  # Namespace resource whitelist (allow all)
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Sync windows (optional - allow sync anytime)
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications:
+        - '*'
+      manualSync: true
+
+  # Orphaned resources (warn but don't delete)
+  orphanedResources:
+    warn: true
+    ignore:
+      # Controller-managed workload resources
+      - group: apps
+        kind: ReplicaSet
+      - group: apps
+        kind: ControllerRevision
+      - group: batch
+        kind: Job
+      - kind: Pod
+      # Dynamically provisioned storage
+      - kind: PersistentVolumeClaim
+      - kind: PersistentVolume
+      # Kubernetes networking internals (EndpointSlice already in global exclusions)
+      - kind: Endpoints
+      # Operator-managed config (CNPG, Longhorn, Prometheus, etc.)
+      - kind: ConfigMap
+      - kind: Secret
+      # Argo ecosystem ephemeral resources
+      - group: argoproj.io
+        kind: Workflow
+      - group: argoproj.io
+        kind: AnalysisRun
+      - group: argoproj.io
+        kind: Rollout
+      # Longhorn internal resources
+      - group: longhorn.io

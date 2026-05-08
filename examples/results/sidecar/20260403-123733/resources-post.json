@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-04-03T14:50:50Z",
+  "mesh_mode": "sidecar",
+  "label": "post-experiment",
+  "pods": [{"name":"istio-gateway-564fb486c-g9vf9","namespace":"istio-system","cpu":"2m","memory":"41Mi"},{"name":"istiod-6b5bdbdc8c-rb8q7","namespace":"istio-system","cpu":"9m","memory":"162Mi"},{"name":"podinfo-public-gateway-istio-857686db89-66xgd","namespace":"istio-system","cpu":"3m","memory":"97Mi"},{"name":"podinfo-6b69f7776-5h92d","namespace":"podinfo","cpu":"4m","memory":"82Mi"},{"name":"podinfo-6b69f7776-99rsb","namespace":"podinfo","cpu":"4m","memory":"78Mi"},{"name":"podinfo-6b69f7776-c8kdx","namespace":"podinfo","cpu":"4m","memory":"83Mi"}],
+  "nodes": [{"name":"relaxo","cpu":"1072m","cpu_percent":"26%","memory":"9872Mi","memory_percent":"60%"},{"name":"shiggy.local-8a371200","cpu":"1298m","cpu_percent":"32%","memory":"8944Mi","memory_percent":"55%"}]
+}

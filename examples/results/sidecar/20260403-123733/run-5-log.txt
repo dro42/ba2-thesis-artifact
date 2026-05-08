@@ -1,0 +1,51 @@
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   CHAOS EXPERIMENT RESULTS — 2026-04-03T13:42:38Z[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: ============================================================[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: Configuration:[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Mesh Mode:       sidecar[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Namespace:       podinfo[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Stable Image:    ghcr.io/stefanprodan/podinfo:6.5.4[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Canary Image:    ghcr.io/stefanprodan/podinfo:6.6.0[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Fault Percent:   80%[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Traffic Duration: 150s[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: === Timing Data (T0-T5) ===[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T0 (fault injected):     1775223283[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T1 (alert pending):      1775223320[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T2 (alert firing):       1775223388[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T4 (failover workflow):  name=podinfo-failover-sidecar-vlf8l[0][0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T5 (collection time):    1775223758[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T0→T1 (fault → alert pending): 37s[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T0→T2 (fault → alert firing):  105s[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T1→T2 (pending → firing):      68s[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   T0→T5 (total experiment):      475s[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: === Prometheus Metrics Snapshot ===[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Stable error rate (1m): 0.35737106344135094[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Stable p99 latency (1m): 4.808397291196388ms[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: === Rollout Final State ===[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Phase:   Healthy[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   Message: Rollout has minimum availability[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: RESULT: PASS — Fault detected, failover promoted canary (podinfo-failover-sidecar-vlf8l[0])[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: [0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: ============================================================[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: JSON artifact written to /tmp/timing.json[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: ---TIMING-JSON-START---[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605: {[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "experiment_id": "8f0b00c8-f503-4862-ba08-cadff6ccb95d",[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "timestamp": "2026-04-03T13:42:38Z",[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "mesh_mode": "sidecar",[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "fault_percentage": 80,[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "traffic_duration_s": 150,[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "timing": {[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:     "t0_fault_injected": 1775223283,[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:     "t1_alert_pending": 1775223320,[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:     "t2_alert_firing": 1775223388,[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:     "t4_failover_workflow": "name=podinfo-failover-sidecar-vlf8l[0]",[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:     "t5_collection": 1775223758[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   },[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:   "deltas_seconds": {[0m
+[36mchaos-experiment-rsp4j-collect-timing-report-4002021605:     "t0_to_t1": 37,[0m

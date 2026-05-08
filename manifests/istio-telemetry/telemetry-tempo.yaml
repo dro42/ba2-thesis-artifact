@@ -1,0 +1,10 @@
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: tempo-tracing
+  namespace: istio-system
+spec:
+  tracing:
+    - providers:
+        - name: alloy
+      randomSamplingPercentage: 100

@@ -1,0 +1,150 @@
+# AnalysisTemplate for canary success rate in Istio ambient mode
+# Key difference from sidecar: metrics come from waypoint proxy, not sidecar
+# The reporter label and destination_service format may differ
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: istio-ambient-success-rate
+  namespace: podinfo-ambient
+spec:
+  args:
+  - name: service-name
+  - name: namespace
+  metrics:
+  # Success rate must be >= 95%
+  # Uses destination_service_name (short name) since ambient metrics
+  # may not use the same FQDN format as sidecar mode
+  - name: success-rate
+    initialDelay: 30s
+    interval: 30s
+    count: 3
+    successCondition: "len(result) == 0 || result[0] >= 0.95"
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://grafana-prometheus-stack-k-prometheus.monitoring.svc:9090
+        query: |
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.service-name}}",
+            destination_service_namespace="{{args.namespace}}",
+            response_code!~"5.*"
+          }[1m]))
+          /
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.service-name}}",
+            destination_service_namespace="{{args.namespace}}"
+          }[1m]))
+  # Error rate must be <= 5%
+  - name: error-rate
+    initialDelay: 30s
+    interval: 30s
+    count: 3
+    successCondition: "len(result) == 0 || result[0] <= 0.05"
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://grafana-prometheus-stack-k-prometheus.monitoring.svc:9090
+        query: |
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.service-name}}",
+            destination_service_namespace="{{args.namespace}}",
+            response_code=~"5.*"
+          }[1m]))
+          /
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.service-name}}",
+            destination_service_namespace="{{args.namespace}}"
+          }[1m]))
+  # Canary p99 latency must not exceed 2x stable p99
+  # initialDelay: 90s allows cold-start canary pods to warm up before measuring.
+  # failureLimit: 3 tolerates transient cold-start spikes.
+  - name: latency-ratio
+    initialDelay: 90s
+    interval: 30s
+    count: 5
+    successCondition: "len(result) == 0 || isNaN(result[0]) || result[0] <= 2.0"
+    failureLimit: 3
+    provider:
+      prometheus:
+        address: http://grafana-prometheus-stack-k-prometheus.monitoring.svc:9090
+        query: |
+          histogram_quantile(0.99,
+            sum(rate(istio_request_duration_milliseconds_bucket{
+              destination_service_name="{{args.service-name}}",
+              destination_service_namespace="{{args.namespace}}"
+            }[1m])) by (le))
+          /
+          histogram_quantile(0.99,
+            sum(rate(istio_request_duration_milliseconds_bucket{
+              destination_service_name="podinfo-stable",
+              destination_service_namespace="{{args.namespace}}"
+            }[1m])) by (le))
+  # Must have at least some traffic to make a decision
+  - name: request-volume
+    interval: 30s
+    count: 3
+    successCondition: "len(result) == 0 || result[0] >= 0.5"
+    failureLimit: 2
+    provider:
+      prometheus:
+        address: http://grafana-prometheus-stack-k-prometheus.monitoring.svc:9090
+        query: |
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.service-name}}",
+            destination_service_namespace="{{args.namespace}}"
+          }[1m]))
+---
+# AnalysisTemplate for monitoring stable version health in ambient mode
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: istio-ambient-stable-health
+  namespace: podinfo-ambient
+spec:
+  args:
+  - name: stable-service
+    value: podinfo-stable
+  - name: namespace
+    value: podinfo-ambient
+  metrics:
+  - name: stable-error-rate
+    interval: 30s
+    count: 5
+    # SUCCEEDS when stable is UNHEALTHY (error rate >= 5%)
+    successCondition: "len(result) == 0 || result[0] >= 0.05"
+    failureLimit: 5
+    provider:
+      prometheus:
+        address: http://grafana-prometheus-stack-k-prometheus.monitoring.svc:9090
+        query: |
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.stable-service}}",
+            destination_service_namespace="{{args.namespace}}",
+            response_code=~"5.*"
+          }[1m]))
+          /
+          sum(rate(istio_requests_total{
+            destination_service_name="{{args.stable-service}}",
+            destination_service_namespace="{{args.namespace}}"
+          }[1m]))
+  - name: stable-latency-ratio
+    interval: 30s
+    count: 5
+    # SUCCEEDS when stable p99 > 2x canary p99 (stable is degraded)
+    successCondition: "len(result) == 0 || isNaN(result[0]) || result[0] > 2.0"
+    failureLimit: 5
+    provider:
+      prometheus:
+        address: http://grafana-prometheus-stack-k-prometheus.monitoring.svc:9090
+        query: |
+          histogram_quantile(0.99,
+            sum(rate(istio_request_duration_milliseconds_bucket{
+              destination_service_name="{{args.stable-service}}",
+              destination_service_namespace="{{args.namespace}}"
+            }[1m])) by (le))
+          /
+          histogram_quantile(0.99,
+            sum(rate(istio_request_duration_milliseconds_bucket{
+              destination_service_name="podinfo-canary",
+              destination_service_namespace="{{args.namespace}}"
+            }[1m])) by (le))

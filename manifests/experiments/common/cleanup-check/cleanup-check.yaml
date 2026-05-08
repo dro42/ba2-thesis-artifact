@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ba2-cleanup-check
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/component: cleanup-check
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ba2-cleanup-check
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/component: cleanup-check
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["namespaces", "pods", "services"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "statefulsets", "replicasets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ba2-cleanup-check
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/component: cleanup-check
+subjects:
+  - kind: ServiceAccount
+    name: ba2-cleanup-check
+    namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ba2-cleanup-check
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ba2-cleanup-check
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/component: cleanup-check
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: ba2-experiment
+        app.kubernetes.io/component: cleanup-check
+    spec:
+      serviceAccountName: ba2-cleanup-check
+      restartPolicy: Never
+      containers:
+        - name: verify-cleanup
+          image: cgr.dev/chainguard/kubectl:latest-dev
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          command:
+            - /bin/sh
+            - -ec
+          args:
+            - |
+              fail() {
+                echo "$1"
+                exit 1
+              }
+
+              echo "Checking BA2 child applications..."
+              for app in \
+                ba2-istio-public-gateway \
+                ba2-mesh-istio-sidecar \
+                ba2-mesh-istio-ambient \
+                ba2-podinfo-istio-rollouts \
+                ba2-podinfo-istio-ambient-rollouts; do
+                if kubectl -n argocd get application "${app}" >/dev/null 2>&1; then
+                  fail "Application ${app} is still present."
+                fi
+              done
+
+              echo "Checking experiment namespaces..."
+              for namespace in podinfo podinfo-ambient; do
+                if kubectl get namespace "${namespace}" >/dev/null 2>&1; then
+                  fail "Namespace ${namespace} still exists."
+                fi
+              done
+
+              echo "Checking istio-system workloads..."
+              if kubectl get namespace istio-system >/dev/null 2>&1; then
+                workloads="$(kubectl -n istio-system get deploy,daemonset,statefulset,pod,svc --no-headers 2>/dev/null || true)"
+                if [ -n "${workloads}" ]; then
+                  echo "${workloads}"
+                  fail "istio-system still contains workload resources."
+                fi
+              fi
+
+              echo "Checking Istio admission webhooks..."
+              mutating="$(kubectl get mutatingwebhookconfigurations --no-headers 2>/dev/null | grep -i 'istio' || true)"
+              validating="$(kubectl get validatingwebhookconfigurations --no-headers 2>/dev/null | grep -i 'istio' || true)"
+              if [ -n "${mutating}" ] || [ -n "${validating}" ]; then
+                printf '%s\n%s\n' "${mutating}" "${validating}"
+                fail "Istio admission webhooks are still present."
+              fi
+
+              echo "BA2 cleanup checks passed."

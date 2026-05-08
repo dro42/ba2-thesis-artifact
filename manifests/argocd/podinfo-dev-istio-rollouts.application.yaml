@@ -1,0 +1,59 @@
+# ArgoCD Application for Podinfo with Argo Rollouts - Istio Sidecar
+# MANUAL SYNC ONLY - Do not enable automated sync
+# Sync: argocd app sync podinfo-dev-istio-rollouts
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podinfo-dev-istio-rollouts
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://github.com/dro42/ba2-thesis-artifact.git
+    targetRevision: main
+    path: manifests/podinfo/overlays/dev-istio-rollouts
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: podinfo
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+  # Argo Rollouts modifies these resources at runtime during canary rollouts
+  # ArgoCD must ignore these fields to avoid perpetual OutOfSync status
+  ignoreDifferences:
+  - group: networking.istio.io
+    kind: VirtualService
+    jqPathExpressions:
+    - .spec.http[].route[].weight
+  - group: networking.istio.io
+    kind: DestinationRule
+    jqPathExpressions:
+    - .spec.subsets[].labels
+  - group: ""
+    kind: Service
+    jqPathExpressions:
+    - .spec.selector
+
+  info:
+  - name: 'Implementation'
+    value: 'Argo Rollouts + Istio Sidecar (VirtualService + DestinationRule)'
+  - name: 'Requirement'
+    value: 'Requires Istio sidecar components and Argo Rollouts to be healthy'
+  - name: 'Mutual Exclusion'
+    value: 'Do not run together with podinfo-dev-istio or ambient overlays'

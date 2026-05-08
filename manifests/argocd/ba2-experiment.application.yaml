@@ -1,0 +1,44 @@
+# BA2 experiment root application.
+# Change spec.source.path to switch between `none`, `istio-sidecar`, and `istio-ambient`.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ba2-experiment
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: ba2-experiment
+    thesis-component: experiment-control
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://github.com/dro42/ba2-thesis-artifact.git
+    targetRevision: main
+    path: manifests/experiments/modes/none
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+  info:
+    - name: "Modes"
+      value: "none, istio-sidecar, istio-ambient"
+    - name: "Switching"
+      value: "Commit current -> none, sync ba2-experiment, wait for cleanup, then commit target mode and sync again"
+    - name: "Prerequisite"
+      value: "argo-rollouts must already be Healthy before entering an active mode"

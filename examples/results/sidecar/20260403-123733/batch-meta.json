@@ -1,0 +1,10 @@
+{
+  "mesh_mode": "sidecar",
+  "num_runs": 10,
+  "successes": 10,
+  "failures": 0,
+  "fault_percentage": 80,
+  "traffic_duration_s": 150,
+  "started": "20260403-123739",
+  "completed": "2026-04-03T14:50:51Z"
+}

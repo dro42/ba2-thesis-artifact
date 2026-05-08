@@ -1,0 +1,291 @@
+# Service Mesh Traces Dashboard (Tempo)
+# Compares traces across Istio sidecar vs ambient namespaces and Istio infrastructure.
+# Uses namespace-based filtering (reliable) instead of custom resource attributes.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ba2-service-mesh-traces-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "BA2"
+data:
+  service-mesh-traces.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "graphTooltip": 0,
+      "id": null,
+      "panels": [
+        {
+          "datasource": null,
+          "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+          "id": 100,
+          "options": {
+            "content": "# Podinfo Trace Comparison\nCompare traces by namespace: `podinfo` (Istio sidecar) vs `podinfo-ambient` (Istio ambient). Bottom row shows Istio infrastructure traces (istiod, ztunnel, waypoint). Traces are sent via OTLP to Alloy and forwarded to Tempo.",
+            "mode": "markdown"
+          },
+          "transparent": true,
+          "type": "text"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 3 },
+          "id": 1,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.name =~ \"podinfo.*\" }",
+              "limit": 50,
+              "tableType": "traces"
+            }
+          ],
+          "title": "Recent Podinfo Traces (All)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 13 },
+          "id": 2,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.namespace = \"podinfo-ambient\" }",
+              "limit": 50,
+              "tableType": "traces"
+            }
+          ],
+          "title": "Ambient Namespace Traces (podinfo-ambient)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 13 },
+          "id": 3,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.namespace = \"podinfo\" }",
+              "limit": 50,
+              "tableType": "traces"
+            }
+          ],
+          "title": "Sidecar Namespace Traces (podinfo)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 23 },
+          "id": 4,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.namespace = \"podinfo-ambient\" }",
+              "limit": 50,
+              "spanLimit": 100,
+              "tableType": "spans"
+            }
+          ],
+          "title": "Ambient Spans (podinfo-ambient)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 23 },
+          "id": 5,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.namespace = \"podinfo\" }",
+              "limit": 50,
+              "spanLimit": 100,
+              "tableType": "spans"
+            }
+          ],
+          "title": "Sidecar Spans (podinfo)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 33 },
+          "id": 6,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ status = error && resource.service.name =~ \"podinfo.*\" }",
+              "limit": 50,
+              "tableType": "traces"
+            }
+          ],
+          "title": "Error Traces (Podinfo)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 43 },
+          "id": 7,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.namespace = \"istio-system\" }",
+              "limit": 50,
+              "tableType": "traces"
+            }
+          ],
+          "title": "Istio System Traces (istio-system)",
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto"
+              }
+            }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 43 },
+          "id": 8,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{ resource.service.name =~ \"ztunnel|waypoint.*\" }",
+              "limit": 50,
+              "tableType": "traces"
+            }
+          ],
+          "title": "Istio Waypoint / Ztunnel Traces",
+          "type": "table"
+        }
+      ],
+      "refresh": "10s",
+      "schemaVersion": 39,
+      "style": "dark",
+      "tags": ["tempo", "traces", "service-mesh", "thesis"],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
+      "timepicker": {
+        "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"],
+        "time_options": ["5m", "15m", "1h", "6h", "12h", "24h"]
+      },
+      "timezone": "",
+      "title": "Service Mesh Traces (Tempo)",
+      "uid": "service-mesh-traces",
+      "version": 4
+    }

@@ -1,0 +1,7 @@
+# Pinned for reproducibility — last verified 2026-05-01 with Python 3.12
+# thesis_stats.py imports numpy, scipy, pandas, matplotlib, seaborn (line 33).
+numpy==1.26.4
+scipy==1.13.0
+pandas==2.2.2
+matplotlib==3.8.4
+seaborn==0.13.2

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ba2-experiment-mode-none
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: ba2-experiment-mode-none
+    thesis-component: experiment-control
+data:
+  mode: none
+  description: "Safe empty mode used to prune mesh and podinfo applications before switching."

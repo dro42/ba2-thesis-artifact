@@ -1,0 +1,82 @@
+ba2-thesis-artifact
+Copyright 2026 Andreas Drozd
+
+This product includes software developed by:
+
+  - Andreas Drozd (originally authored thesis artifacts)
+
+This artifact accompanies the bachelor thesis
+"Sidecar vs. Ambient: Telemetry Reliability and Automated Canary Remediation
+in a GitOps-Managed Kubernetes Environment", Hochschule Campus Wien, Computer Science
+and Digital Communications, SS 2026.
+
+Original works in this repository (Apache-2.0):
+  - Shell scripts under scripts/
+  - Python analysis under analysis/
+  - All 7 Grafana dashboards under manifests/monitoring/dashboards/
+    (originally authored, no gnetId/__inputs from grafana.com)
+  - PrometheusRule, Argo WorkflowTemplate, EventSource, Sensor manifests
+    under manifests/automation/ and manifests/monitoring/
+  - ArgoCD AppProject and Application manifests under manifests/argocd/
+    and manifests/experiments/
+  - All documentation under docs/
+
+============================================================================
+Upstream components used at runtime (not redistributed in source form here):
+============================================================================
+
+podinfo
+  Author:  Stefan Prodan
+  License: Apache-2.0 (https://github.com/stefanprodan/podinfo/blob/master/LICENSE)
+  Used as: stable (v6.5.4) and canary (v6.6.0) container images
+           pulled from ghcr.io/stefanprodan/podinfo
+
+Istio
+  Project: https://istio.io
+  License: Apache-2.0 (https://github.com/istio/istio/blob/master/LICENSE)
+  Used as: service mesh (sidecar 1.28.3, ambient 1.29.0) installed via
+           upstream Helm charts; no Istio source is redistributed here.
+
+Argo Rollouts, Argo Workflows, Argo Events
+  Project: https://argoproj.github.io
+  License: Apache-2.0 (https://github.com/argoproj/argo-rollouts/blob/master/LICENSE)
+  Used as: container images quay.io/argoproj/kubectl-argo-rollouts and
+           runtime CRDs installed via upstream Helm charts; no source
+           redistributed here.
+
+ArgoCD
+  Project: https://argo-cd.readthedocs.io
+  License: Apache-2.0 (https://github.com/argoproj/argo-cd/blob/master/LICENSE)
+  Used as: GitOps controller installed via upstream Helm chart; no source
+           redistributed here.
+
+kube-prometheus-stack (Prometheus, Alertmanager, Grafana)
+  Project: https://github.com/prometheus-community/helm-charts
+  License: Apache-2.0 (https://github.com/prometheus-community/helm-charts/blob/main/LICENSE)
+  Used as: monitoring stack installed via upstream Helm chart; no source
+           redistributed here.
+
+curl
+  Image:   curlimages/curl (Docker Hub)
+  License: curl license (https://curl.se/docs/copyright.html), MIT-style
+  Used as: container image referenced from Argo WorkflowTemplates.
+
+kubectl (Chainguard)
+  Image:   cgr.dev/chainguard/kubectl
+  License: Apache-2.0 (kubernetes/kubectl); Chainguard image distribution policy
+  Used as: container image referenced from preflight and cleanup hooks.
+
+============================================================================
+Pyroscope and Tempo dashboard inspiration
+============================================================================
+The dashboards manifests/monitoring/dashboards/ba2-profiles-dashboard-cm.yaml
+and ba2-traces-dashboard-cm.yaml were authored from scratch for this thesis
+and use queries documented in upstream Pyroscope and Tempo documentation.
+No Grafana JSON was imported from community.grafana.com; no gnetId or
+__inputs fields are present.
+
+  Pyroscope:  https://github.com/grafana/pyroscope
+              License: AGPL-3.0 (the dashboard source code is original; only
+              the metric and profile names referenced are from upstream)
+  Tempo:      https://github.com/grafana/tempo
+              License: AGPL-3.0 (same caveat)

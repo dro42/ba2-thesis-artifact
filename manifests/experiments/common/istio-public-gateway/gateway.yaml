@@ -1,0 +1,40 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: podinfo-public-gateway
+  namespace: istio-system
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: podinfo-public-gateway
+spec:
+  gatewayClassName: istio
+  infrastructure:
+    labels:
+      svccontroller.k3s.cattle.io/lbpool: istio
+      app.kubernetes.io/part-of: ba2-experiment
+      app.kubernetes.io/name: podinfo-public-gateway
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              drozd.cloud/public-istio-gateway: "enabled"
+    - name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: drozd-cloud-wildcard
+            group: ""
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              drozd.cloud/public-istio-gateway: "enabled"

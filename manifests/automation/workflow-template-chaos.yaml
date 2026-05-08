@@ -1,0 +1,1108 @@
+# Chaos Experiment WorkflowTemplate — thesis end-to-end test
+#
+# Tests the full event-driven remediation pipeline for BOTH mesh modes:
+#   1. Setup: abort any canary, reset to stable, trigger new canary
+#   2. Inject fault (/status/503 endpoint in both modes — harmonized)
+#   3. Generate traffic so Prometheus accumulates 1m+ of error data
+#   4. Wait for Alertmanager to fire (real alert pipeline, no simulated webhook)
+#   5. Sensor triggers failover workflow → validates metrics → promotes canary
+#   6. Collect structured timing data (T0–T5) for thesis RQ2
+#   7. onExit: always remove fault injection
+#
+# Usage:
+#   # Sidecar mode (default):
+#   argo submit --from workflowtemplate/chaos-experiment -n argo-events
+#
+#   # Ambient mode:
+#   argo submit --from workflowtemplate/chaos-experiment -n argo-events \
+#     -p mesh-mode=ambient
+#
+#   # Custom fault percentage:
+#   argo submit --from workflowtemplate/chaos-experiment -n argo-events \
+#     -p fault-percentage=80 -p traffic-duration=180
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: chaos-experiment
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+    thesis-component: chaos-experiment
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: chaos-pipeline
+  onExit: cleanup
+
+  arguments:
+    parameters:
+    - name: mesh-mode
+      value: sidecar
+      enum:
+      - sidecar
+      - ambient
+    - name: rollout-name
+      value: podinfo
+    - name: stable-image
+      value: ghcr.io/stefanprodan/podinfo:6.5.4
+    - name: canary-image
+      value: ghcr.io/stefanprodan/podinfo:6.6.0
+    - name: fault-percentage
+      value: "60"
+    - name: traffic-duration
+      value: "150"
+    - name: prometheus-url
+      value: http://grafana-prometheus-stack-k-prometheus.monitoring.svc.cluster.local:9090
+
+  templates:
+
+  # ── Main pipeline ────────────────────────────────────────────────────────────
+  - name: chaos-pipeline
+    steps:
+    # Phase 0: resolve mesh-mode-dependent parameters
+    - - name: resolve-params
+        template: resolve-mesh-params
+
+    # Phase 1: setup — ensure a clean canary is in progress
+    - - name: abort-any-canary
+        template: abort-rollout
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+        continueOn:
+          failed: true
+    - - name: reset-to-stable
+        template: set-rollout-image
+        arguments:
+          parameters:
+          - name: image
+            value: "{{workflow.parameters.stable-image}}"
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+        continueOn:
+          failed: true
+    - - name: promote-reset
+        template: promote-rollout-full
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+        continueOn:
+          failed: true
+    - - name: wait-for-reconcile
+        template: sleep
+        arguments:
+          parameters:
+          - name: seconds
+            value: "20"
+    # Phase 1a: disable AnalysisTemplate BEFORE triggering canary.
+    # Must happen while rollout is idle/stable, otherwise patching steps
+    # mid-rollout causes Argo Rollouts to recalculate and skip to Healthy.
+    - - name: disable-analysis
+        template: disable-analysis-templates
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+
+    - - name: trigger-canary
+        template: set-rollout-image
+        arguments:
+          parameters:
+          - name: image
+            value: "{{workflow.parameters.canary-image}}"
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+
+    # Phase 1b: enroll argo-events namespace in ambient mesh (for traffic metrics)
+    - - name: enroll-in-mesh
+        template: label-namespace-ambient
+        arguments:
+          parameters:
+          - name: action
+            value: "add"
+        when: "{{workflow.parameters.mesh-mode}} == ambient"
+
+    # Phase 1c: generate warmup traffic so analysis templates have data
+    - - name: warmup-traffic
+        template: generate-warmup-traffic
+        arguments:
+          parameters:
+          - name: stable-svc
+            value: "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+
+    # Phase 2: wait for canary to receive traffic weight, then record T0
+    - - name: wait-for-canary-weight
+        template: wait-for-weight
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+          - name: timeout
+            value: "300"
+
+    # Phase 3: inject fault + generate traffic (concurrent)
+    - - name: record-t0
+        template: record-timestamp
+        arguments:
+          parameters:
+          - name: label
+            value: "T0_FAULT_INJECTED"
+
+    # Phase 3+4: inject fault, sustain traffic, and watch for promotion — all concurrent.
+    # Traffic must continue flowing during the entire alert pipeline cycle
+    # (fault injection + Prometheus detection + Alertmanager + failover workflow).
+    - - name: fault-traffic-and-watch
+        template: fault-traffic-watch-dag
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+          - name: stable-svc
+            value: "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+
+    # Phase 5: collect results with timing data
+    - - name: collect-results
+        template: collect-timing-report
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{steps.resolve-params.outputs.parameters.namespace}}"
+          - name: t0
+            value: "{{steps.record-t0.outputs.parameters.timestamp}}"
+          - name: stable-svc
+            value: "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+          - name: t1
+            value: "{{steps.fault-traffic-and-watch.outputs.parameters.t1-pending}}"
+          - name: t2
+            value: "{{steps.fault-traffic-and-watch.outputs.parameters.t2-firing}}"
+
+  # ── Parameter resolution ─────────────────────────────────────────────────────
+  - name: resolve-mesh-params
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        MODE="{{workflow.parameters.mesh-mode}}"
+        echo "=== Resolving parameters for mesh-mode: $MODE ==="
+
+        if [ "$MODE" = "sidecar" ]; then
+          echo "podinfo" > /tmp/namespace
+          # Use port 80 (Service port), not 9898 (container targetPort).
+          # Traffic must go through the Service for the sidecar proxy to
+          # correctly attribute destination_service in istio_requests_total.
+          echo "http://podinfo-stable.podinfo.svc.cluster.local" > /tmp/stable-svc
+        elif [ "$MODE" = "ambient" ]; then
+          echo "podinfo-ambient" > /tmp/namespace
+          # Use port 80 (service port) not 9898 (container port).
+          # Traffic must go through the service for the waypoint proxy to
+          # observe it and generate istio_requests_total metrics.
+          echo "http://podinfo-stable.podinfo-ambient.svc.cluster.local" > /tmp/stable-svc
+        else
+          echo "ERROR: Unknown mesh-mode: $MODE"
+          exit 1
+        fi
+
+        echo "Namespace: $(cat /tmp/namespace)"
+        echo "Stable SVC: $(cat /tmp/stable-svc)"
+    outputs:
+      parameters:
+      - name: namespace
+        valueFrom:
+          path: /tmp/namespace
+      - name: stable-svc
+        valueFrom:
+          path: /tmp/stable-svc
+
+  # ── Timestamp recorder ───────────────────────────────────────────────────────
+  # ── Enroll/unenroll argo-events namespace in ambient mesh ────────────────────
+  # Workflow pods must be part of the ambient mesh so that traffic to
+  # podinfo-ambient services goes through the waypoint proxy and generates
+  # istio_requests_total metrics. This adds/removes the dataplane-mode label.
+  - name: label-namespace-ambient
+    inputs:
+      parameters:
+      - name: action
+    retryStrategy:
+      limit: 3
+      retryPolicy: "Always"
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        ACTION="{{inputs.parameters.action}}"
+
+        if [ "$ACTION" = "add" ]; then
+          echo "Adding ambient mesh label to argo-events namespace"
+          PATCH='[{"op":"add","path":"/metadata/labels/istio.io~1dataplane-mode","value":"ambient"}]'
+        else
+          echo "Removing ambient mesh label from argo-events namespace"
+          PATCH='[{"op":"remove","path":"/metadata/labels/istio.io~1dataplane-mode"}]'
+        fi
+
+        RESULT=$(curl -s --cacert $CA -H "Authorization: Bearer $TOKEN" \
+          -X PATCH "$K8S/api/v1/namespaces/argo-events" \
+          -H "Content-Type: application/json-patch+json" \
+          -d "$PATCH" -w "%{http_code}" -o /dev/null)
+
+        echo "Result: HTTP $RESULT"
+        if [ "$RESULT" = "200" ]; then
+          echo "Namespace label updated successfully"
+          # Wait for ztunnel to pick up the change
+          sleep 5
+        else
+          echo "WARNING: Failed to update namespace label (HTTP $RESULT)"
+        fi
+
+  # ── Warmup traffic to prime Prometheus metrics for analysis templates ────────
+  - name: generate-warmup-traffic
+    inputs:
+      parameters:
+      - name: stable-svc
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        SVC="{{inputs.parameters.stable-svc}}"
+        # Derive canary URL from stable URL
+        CANARY_SVC=$(echo "$SVC" | sed 's/podinfo-stable/podinfo-canary/')
+
+        echo "=== Generating warmup traffic for 60s ==="
+        echo "  Stable: $SVC"
+        echo "  Canary: $CANARY_SVC"
+
+        END=$(($(date +%s) + 60))
+        COUNT=0
+        while [ "$(date +%s)" -lt "$END" ]; do
+          curl -sf -o /dev/null "$SVC/" 2>/dev/null &
+          curl -sf -o /dev/null "$CANARY_SVC/" 2>/dev/null &
+          wait
+          COUNT=$((COUNT + 2))
+          sleep 0.3
+        done
+
+        echo "Warmup complete: sent ~$COUNT requests over 60s"
+
+  - name: record-timestamp
+    inputs:
+      parameters:
+      - name: label
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TS=$(date +%s)
+        echo "$TS" > /tmp/timestamp
+        echo "{{inputs.parameters.label}}: $TS ($(date -u -d @$TS '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u '+%Y-%m-%dT%H:%M:%SZ'))"
+    outputs:
+      parameters:
+      - name: timestamp
+        valueFrom:
+          path: /tmp/timestamp
+
+  # ── Rollout control ──────────────────────────────────────────────────────────
+  - name: abort-rollout
+    inputs:
+      parameters:
+      - name: namespace
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - abort
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{inputs.parameters.namespace}}"
+
+  - name: set-rollout-image
+    inputs:
+      parameters:
+      - name: image
+      - name: namespace
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - set
+      - image
+      - "{{workflow.parameters.rollout-name}}"
+      - "{{workflow.parameters.rollout-name}}={{inputs.parameters.image}}"
+      - -n
+      - "{{inputs.parameters.namespace}}"
+
+  - name: promote-rollout-full
+    inputs:
+      parameters:
+      - name: namespace
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - promote
+      - "{{workflow.parameters.rollout-name}}"
+      - --full
+      - -n
+      - "{{inputs.parameters.namespace}}"
+
+  # Disable AnalysisTemplate steps during experiments so only the
+  # event-driven pipeline (Prometheus -> Alertmanager -> Argo Events)
+  # performs remediation. This enables fair sidecar vs ambient comparison.
+  - name: disable-analysis-templates
+    inputs:
+      parameters:
+      - name: namespace
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        NS="{{inputs.parameters.namespace}}"
+        ROLLOUT_NAME="{{workflow.parameters.rollout-name}}"
+
+        echo "=== Disabling AnalysisTemplate steps for experiment ==="
+
+        # Replace canary steps: keep setWeight + pause, remove analysis.
+        # Pauses must be >= 2m so alerts (for: 1m) have time to fire
+        # during canary progression before it reaches 100%.
+        PATCH='{
+          "spec": {
+            "strategy": {
+              "canary": {
+                "steps": [
+                  {"setWeight": 10},
+                  {"pause": {"duration": "2m"}},
+                  {"setWeight": 30},
+                  {"pause": {"duration": "2m"}},
+                  {"setWeight": 50},
+                  {"pause": {"duration": "2m"}},
+                  {"setWeight": 100}
+                ]
+              }
+            }
+          }
+        }'
+
+        RESULT=$(curl -sf -X PATCH \
+          --cacert $CA \
+          -H "Authorization: Bearer $TOKEN" \
+          -H "Content-Type: application/merge-patch+json" \
+          "$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/$ROLLOUT_NAME" \
+          -d "$PATCH" -o /dev/null -w "%{http_code}")
+
+        if [ "$RESULT" = "200" ]; then
+          echo "Analysis steps removed successfully"
+          echo "Steps: setWeight(10)->pause(2m)->setWeight(30)->pause(2m)->setWeight(50)->pause(2m)->setWeight(100)"
+        else
+          echo "WARNING: Failed to patch rollout (HTTP $RESULT)"
+          echo "AnalysisTemplate may race with event-driven pipeline"
+        fi
+
+  - name: sleep
+    inputs:
+      parameters:
+      - name: seconds
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - "sleep {{inputs.parameters.seconds}}"
+
+  - name: wait-for-weight
+    inputs:
+      parameters:
+      - name: namespace
+      - name: timeout
+    activeDeadlineSeconds: 360
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        NS="{{inputs.parameters.namespace}}"
+        TIMEOUT={{inputs.parameters.timeout}}
+
+        echo "=== Waiting for canary to receive traffic weight > 0 ==="
+
+        i=0
+        while [ $i -lt $TIMEOUT ]; do
+          ROLLOUT=$(curl -s --cacert $CA -H "Authorization: Bearer $TOKEN" \
+            "$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}")
+          CURL_EXIT=$?
+
+          if [ $CURL_EXIT -ne 0 ]; then
+            echo "[$(date +%H:%M:%S)] curl failed (exit=$CURL_EXIT)"
+          elif echo "$ROLLOUT" | grep -q '"kind":"Status"'; then
+            echo "[$(date +%H:%M:%S)] API error"
+          else
+            # Compact JSON to single line (K8s API returns pretty-printed multi-line)
+            COMPACT=$(echo "$ROLLOUT" | tr -d '\n' | tr -s ' ')
+
+            # Parse phase and step from compact JSON
+            PHASE=$(echo "$COMPACT" | grep -oE '"phase": *"[^"]*"' | head -1 | grep -oE '"[A-Z][a-z]*"' | tr -d '"')
+            STEP=$(echo "$COMPACT" | grep -oE '"currentStepIndex": *[0-9]+' | head -1 | grep -oE '[0-9]+')
+            PHASE="${PHASE:-unknown}"
+            STEP="${STEP:-0}"
+
+            echo "[$(date +%H:%M:%S)] Phase: $PHASE, Step: $STEP"
+
+            # Canary is active when phase is Progressing/Paused and step >= 1
+            if [ "$STEP" -ge 1 ] && [ "$PHASE" != "Degraded" ] && [ "$PHASE" != "Healthy" ] && [ "$PHASE" != "unknown" ]; then
+              echo "Canary is active (phase=$PHASE, step=$STEP)"
+              exit 0
+            fi
+
+            if [ "$PHASE" = "Degraded" ]; then
+              echo "ERROR: Rollout degraded — analysis aborted the canary"
+              exit 1
+            fi
+          fi
+
+          i=$((i + 5))
+          sleep 5
+        done
+
+        echo "TIMEOUT: Canary never received traffic weight within ${TIMEOUT}s"
+        exit 1
+
+  # ── Fault injection + traffic (concurrent DAG) ──────────────────────────────
+  # Combined DAG: fault injection, sustained traffic, and promotion watching run concurrently.
+  # Both modes: inject fault via /status/503 requests, then traffic + watch run in parallel.
+  # For ambient: fault injection IS traffic (sends /status/503 requests), plus sustained
+  #   background traffic runs in parallel to keep metrics flowing during watch-promotion.
+  - name: fault-traffic-watch-dag
+    inputs:
+      parameters:
+      - name: namespace
+      - name: stable-svc
+    dag:
+      tasks:
+      - name: inject-fault
+        template: inject-fault-dispatch
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{inputs.parameters.namespace}}"
+          - name: stable-svc
+            value: "{{inputs.parameters.stable-svc}}"
+      - name: sustained-traffic
+        template: generate-sustained-traffic
+        arguments:
+          parameters:
+          - name: stable-svc
+            value: "{{inputs.parameters.stable-svc}}"
+      - name: watch-promotion
+        template: wait-for-promotion
+        arguments:
+          parameters:
+          - name: namespace
+            value: "{{inputs.parameters.namespace}}"
+        dependencies: [inject-fault]
+    outputs:
+      parameters:
+      - name: t1-pending
+        valueFrom:
+          parameter: "{{tasks.watch-promotion.outputs.parameters.t1-pending}}"
+      - name: t2-firing
+        valueFrom:
+          parameter: "{{tasks.watch-promotion.outputs.parameters.t2-firing}}"
+
+  # Fault injection marker — sustained-traffic now handles /status/503 faults.
+  # This step acts as a gate for watch-promotion (which depends on inject-fault).
+  # Waits 10s to let sustained-traffic start sending errors before polling begins.
+  - name: inject-fault-dispatch
+    inputs:
+      parameters:
+      - name: namespace
+      - name: stable-svc
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        FAULT_PCT={{workflow.parameters.fault-percentage}}
+        echo "=== Fault injection via sustained traffic ==="
+        echo "  ${FAULT_PCT}% of stable requests -> /status/503"
+        echo "  Waiting 10s for traffic to start generating errors..."
+        sleep 10
+        echo "  Gate open — watch-promotion will begin polling"
+
+  # UNUSED: retained for potential future use (sidecar VirtualService fault injection)
+  # Sidecar: patch VirtualService with Istio fault abort
+  - name: inject-istio-fault
+    inputs:
+      parameters:
+      - name: namespace
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        NS="{{inputs.parameters.namespace}}"
+
+        echo "=== Injecting Istio fault (sidecar mode) ==="
+        echo "Target: $NS/virtualservice/{{workflow.parameters.rollout-name}}"
+        echo "Fault:  abort {{workflow.parameters.fault-percentage}}% requests with 503"
+
+        PATCH="[{\"op\":\"add\",\"path\":\"/spec/http/0/fault\",\"value\":{\"abort\":{\"httpStatus\":503,\"percentage\":{\"value\":{{workflow.parameters.fault-percentage}}}}}}]"
+
+        RESULT=$(curl -sf -X PATCH \
+          --cacert $CA \
+          -H "Authorization: Bearer $TOKEN" \
+          -H "Content-Type: application/json-patch+json" \
+          "$K8S/apis/networking.istio.io/v1beta1/namespaces/$NS/virtualservices/{{workflow.parameters.rollout-name}}" \
+          -d "$PATCH" -o /dev/null -w "%{http_code}")
+
+        if [ "$RESULT" = "200" ]; then
+          echo "Fault injection active (HTTP $RESULT)"
+        else
+          echo "ERROR: Fault injection failed (HTTP $RESULT)"
+          exit 1
+        fi
+
+  # App-level fault injection — use podinfo's /status/503 endpoint to generate errors.
+  # Used by both sidecar and ambient modes (harmonized per Codex peer review).
+  # IMPORTANT: In ambient mode, traffic must go through the service ClusterIP
+  # (port 80) so the waypoint proxy generates istio_requests_total metrics.
+  # The workflow pod runs in argo-events (outside the mesh), but ztunnel on the
+  # destination node still intercepts the traffic and routes it through the waypoint
+  # because the destination service has istio.io/use-waypoint label.
+  - name: inject-ambient-fault
+    inputs:
+      parameters:
+      - name: stable-svc
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        SVC="{{inputs.parameters.stable-svc}}"
+        DURATION={{workflow.parameters.traffic-duration}}
+        FAULT_PCT={{workflow.parameters.fault-percentage}}
+
+        echo "=== Injecting errors (ambient mode) ==="
+        echo "Target: $SVC/status/503"
+        echo "Fault rate: ~${FAULT_PCT}% of requests will hit /status/503"
+        echo "Duration: ${DURATION}s"
+
+        COUNT=0
+        ERRORS=0
+        END=$(($(date +%s) + DURATION))
+
+        while [ "$(date +%s)" -lt "$END" ]; do
+          RAND=$((RANDOM % 100))
+          if [ "$RAND" -lt "$FAULT_PCT" ]; then
+            curl -s -o /dev/null --max-time 2 "$SVC/status/503" 2>/dev/null || true
+            ERRORS=$((ERRORS + 1))
+          else
+            curl -s -o /dev/null --max-time 2 "$SVC/" 2>/dev/null || true
+          fi
+          COUNT=$((COUNT + 1))
+
+          if [ $((COUNT % 100)) -eq 0 ]; then
+            PCT=$((ERRORS * 100 / COUNT))
+            echo "[$(date +%H:%M:%S)] Requests: $COUNT | 503s: $ERRORS (${PCT}%)"
+          fi
+          sleep 0.05
+        done
+
+        PCT=$((ERRORS * 100 / COUNT))
+        echo "Ambient fault injection done: $COUNT requests, $ERRORS errors (${PCT}%)"
+    activeDeadlineSeconds: 300
+
+  # Generate sustained traffic (~20 req/s for reliable histograms)
+  - name: generate-traffic
+    inputs:
+      parameters:
+      - name: stable-svc
+    activeDeadlineSeconds: 300
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        SVC="{{inputs.parameters.stable-svc}}"
+        DURATION={{workflow.parameters.traffic-duration}}
+
+        echo "=== Traffic generation (${DURATION}s, ~20 req/s) ==="
+        echo "Target: $SVC"
+
+        COUNT=0
+        ERRORS=0
+        END=$(($(date +%s) + DURATION))
+
+        while [ $(date +%s) -lt $END ]; do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "$SVC/" 2>/dev/null || echo "000")
+          COUNT=$((COUNT + 1))
+          [ "$STATUS" = "503" ] || [ "$STATUS" = "500" ] && ERRORS=$((ERRORS + 1))
+
+          if [ $((COUNT % 200)) -eq 0 ]; then
+            PCT=$(( ERRORS * 100 / COUNT ))
+            echo "[$(date +%H:%M:%S)] Requests: $COUNT | 5xx: $ERRORS (${PCT}%)"
+          fi
+          sleep 0.05
+        done
+
+        PCT=$(( ERRORS * 100 / COUNT ))
+        echo "Traffic done — $COUNT requests, $ERRORS errors (${PCT}%)"
+
+  # Sustained traffic for the full experiment duration.
+  # Runs for traffic-duration + 300s to cover the entire alert pipeline cycle.
+  # Sends to both stable and canary services to keep metrics flowing.
+  # After T0 (fault start), FAULT_PCT% of stable requests hit /status/503
+  # so the error rate directly reflects the fault percentage in Prometheus.
+  - name: generate-sustained-traffic
+    inputs:
+      parameters:
+      - name: stable-svc
+    activeDeadlineSeconds: 600
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        SVC="{{inputs.parameters.stable-svc}}"
+        CANARY_SVC=$(echo "$SVC" | sed 's/podinfo-stable/podinfo-canary/')
+        FAULT_PCT={{workflow.parameters.fault-percentage}}
+        TOTAL=$(({{workflow.parameters.traffic-duration}} + 300))
+
+        echo "=== Sustained traffic (${TOTAL}s, ~10 req/s) ==="
+        echo "  Stable: $SVC"
+        echo "  Canary: $CANARY_SVC"
+        echo "  Fault %: ${FAULT_PCT}% of stable requests → /status/503"
+
+        COUNT=0
+        ERRORS=0
+        END=$(($(date +%s) + TOTAL))
+
+        while [ "$(date +%s)" -lt "$END" ]; do
+          # Stable traffic: FAULT_PCT% hit /status/503, rest hit /
+          RAND=$((RANDOM % 100))
+          if [ "$RAND" -lt "$FAULT_PCT" ]; then
+            curl -s -o /dev/null --max-time 2 "$SVC/status/503" 2>/dev/null &
+            ERRORS=$((ERRORS + 1))
+          else
+            curl -s -o /dev/null --max-time 2 "$SVC/" 2>/dev/null &
+          fi
+          # Canary traffic: always healthy
+          curl -s -o /dev/null --max-time 2 "$CANARY_SVC/" 2>/dev/null &
+          wait
+          COUNT=$((COUNT + 2))
+          [ $((COUNT % 200)) -eq 0 ] && echo "[$(date +%H:%M:%S)] Traffic: $COUNT (503s: $ERRORS)"
+          sleep 0.2
+        done
+
+        PCT=0
+        [ "$COUNT" -gt 0 ] && PCT=$((ERRORS * 100 / COUNT))
+        echo "Sustained traffic done — $COUNT requests, $ERRORS errors (${PCT}%)"
+
+  # ── Watch for automatic promotion via real alert pipeline ────────────────────
+  - name: wait-for-promotion
+    inputs:
+      parameters:
+      - name: namespace
+    activeDeadlineSeconds: 600
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        NS="{{inputs.parameters.namespace}}"
+        PROM="{{workflow.parameters.prometheus-url}}"
+        MODE="{{workflow.parameters.mesh-mode}}"
+
+        # Alert name pattern per mesh mode
+        if [ "$MODE" = "sidecar" ]; then
+          ALERT_PATTERN="PodInfoStable.*"
+        else
+          ALERT_PATTERN="PodInfoAmbient.*"
+        fi
+
+        # Initialize T1/T2 tracking files
+        echo "N/A" > /tmp/t1_pending
+        echo "N/A" > /tmp/t2_firing
+        T1_CAPTURED=false
+        T2_CAPTURED=false
+
+        echo "=== Watching for automatic promotion (max 10 minutes) ==="
+        echo "Pipeline: PrometheusRule -> Alertmanager -> Argo Events -> Failover Workflow -> Promote"
+        echo "Alert pattern: $ALERT_PATTERN"
+        echo ""
+
+        i=0
+        PREV_PHASE=""
+        while [ $i -lt 60 ]; do
+          ROLLOUT=$(curl -s --cacert $CA -H "Authorization: Bearer $TOKEN" \
+            "$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}")
+
+          COMPACT=$(echo "$ROLLOUT" | tr -d '\n' | tr -s ' ')
+          PHASE=$(echo "$COMPACT" | grep -oE '"phase": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"/\1/')
+          PHASE="${PHASE:-?}"
+          STEP=$(echo "$COMPACT" | grep -oE '"currentStepIndex": *[0-9]+' | head -1 | grep -oE '[0-9]+')
+          STEP="${STEP:-?}"
+          ABORT=$(echo "$COMPACT" | grep -oE '"abort": *(true|false)' | head -1 | grep -oE 'true\|false')
+          ABORT="${ABORT:-false}"
+          MSG=$(echo "$COMPACT" | grep -oE '"message": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"/\1/')
+          MSG="${MSG:-}"
+
+          # ── T1/T2 capture: query Prometheus for alert state ──
+          if [ "$T1_CAPTURED" = false ]; then
+            FOR_DATA=$(curl -sf "$PROM/api/v1/query" \
+              --data-urlencode "query=ALERTS_FOR_STATE{alertname=~\"${ALERT_PATTERN}\"}" 2>/dev/null || echo "")
+            FOR_VAL=$(echo "$FOR_DATA" | grep -oE '"value":\[[^,]+,"[^"]*"' | cut -d'"' -f4 | grep -oE '^[0-9]+' | head -1)
+            if [ -n "$FOR_VAL" ] && [ "$FOR_VAL" != "" ]; then
+              echo "$FOR_VAL" > /tmp/t1_pending
+              T1_CAPTURED=true
+              echo "  >> T1 CAPTURED: alert pending since $FOR_VAL"
+            fi
+          fi
+
+          if [ "$T2_CAPTURED" = false ]; then
+            ALERT_DATA=$(curl -sf "$PROM/api/v1/query" \
+              --data-urlencode "query=ALERTS{alertname=~\"${ALERT_PATTERN}\",alertstate=\"firing\"}" 2>/dev/null || echo "")
+            ALERT_TS=$(echo "$ALERT_DATA" | grep -oE '"value":\[[0-9.]+' | grep -oE '[0-9.]+$' | head -1 | cut -d. -f1)
+            if [ -n "$ALERT_TS" ] && [ "$ALERT_TS" != "" ]; then
+              echo "$ALERT_TS" > /tmp/t2_firing
+              T2_CAPTURED=true
+              echo "  >> T2 CAPTURED: alert firing at $ALERT_TS"
+            fi
+          fi
+
+          [ "$PHASE" != "$PREV_PHASE" ] && echo "--- Phase change: $PREV_PHASE -> $PHASE ---"
+          echo "[$(date +%H:%M:%S)] Phase: $PHASE | Step: $STEP | Abort: $ABORT | T1:$(cat /tmp/t1_pending) T2:$(cat /tmp/t2_firing)${MSG:+ | $MSG}"
+          PREV_PHASE=$PHASE
+
+          if [ "$PHASE" = "Healthy" ]; then
+            echo ""
+            echo "SUCCESS: Canary promoted to 100%!"
+            date +%s > /tmp/t5_promotion_complete
+            exit 0
+          fi
+
+          if [ "$PHASE" = "Degraded" ] || [ "$ABORT" = "true" ]; then
+            echo ""
+            echo "REMEDIATED: Canary was correctly rejected (phase=$PHASE, abort=$ABORT)"
+            echo "  Message: $MSG"
+            date +%s > /tmp/t5_remediation_complete
+            exit 0
+          fi
+
+          i=$((i + 1))
+          sleep 10
+        done
+
+        echo ""
+        echo "TIMEOUT: Rollout was not promoted within 10 minutes"
+        exit 1
+    outputs:
+      parameters:
+      - name: t1-pending
+        valueFrom:
+          path: /tmp/t1_pending
+        default: "N/A"
+      - name: t2-firing
+        valueFrom:
+          path: /tmp/t2_firing
+        default: "N/A"
+
+  # ── Timing report (T0–T5) for thesis RQ2 ────────────────────────────────────
+  - name: collect-timing-report
+    inputs:
+      parameters:
+      - name: namespace
+      - name: t0
+      - name: stable-svc
+      - name: t1
+      - name: t2
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        PROM="{{workflow.parameters.prometheus-url}}"
+        NS="{{inputs.parameters.namespace}}"
+        MODE="{{workflow.parameters.mesh-mode}}"
+        T0={{inputs.parameters.t0}}
+
+        echo "============================================================"
+        echo "  CHAOS EXPERIMENT RESULTS — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+        echo "============================================================"
+        echo ""
+        echo "Configuration:"
+        echo "  Mesh Mode:       $MODE"
+        echo "  Namespace:       $NS"
+        echo "  Stable Image:    {{workflow.parameters.stable-image}}"
+        echo "  Canary Image:    {{workflow.parameters.canary-image}}"
+        echo "  Fault Percent:   {{workflow.parameters.fault-percentage}}%"
+        echo "  Traffic Duration: {{workflow.parameters.traffic-duration}}s"
+        echo ""
+
+        # T0: fault injection start (passed from earlier step)
+        echo "=== Timing Data (T0-T5) ==="
+
+        # T1/T2: captured live in the watch-promotion polling loop
+        T1_PENDING="{{inputs.parameters.t1}}"
+        T2_ALERT="{{inputs.parameters.t2}}"
+
+        if [ "$MODE" = "sidecar" ]; then
+          STABLE_LABEL="destination_app=\"podinfo\",destination_workload_namespace=\"$NS\",reporter=\"destination\""
+        else
+          STABLE_LABEL="destination_service_name=\"podinfo-stable\",destination_service_namespace=\"$NS\""
+        fi
+
+        # T4: check if a failover workflow ran (query K8s API for recent workflows)
+        # Use labelSelector if labels exist, fall back to name grep
+        FAILOVER_PREFIX="podinfo-failover-${MODE}"
+        WORKFLOWS=$(curl -s --cacert $CA -H "Authorization: Bearer $TOKEN" \
+          "$K8S/apis/argoproj.io/v1alpha1/namespaces/argo-events/workflows?labelSelector=triggered-by=prometheus-alert,failover-mode=${MODE}" \
+          || echo "{}")
+        # Extract latest failover workflow name
+        # K8s API JSON uses "name": "value" with space after colon
+        T4_NAME=$(echo "$WORKFLOWS" | tr '\n' ' ' | grep -oE '"name": *"'"${FAILOVER_PREFIX}"'-[^".]*"' | sed 's/.*"name": *"\([^"]*\)"/\1/' | tail -1)
+        # Fallback: if label selector returned nothing, try without labels
+        if [ -z "$T4_NAME" ]; then
+          WORKFLOWS_ALL=$(curl -s --cacert $CA -H "Authorization: Bearer $TOKEN" \
+            "$K8S/apis/argoproj.io/v1alpha1/namespaces/argo-events/workflows" || echo "{}")
+          T4_NAME=$(echo "$WORKFLOWS_ALL" | tr '\n' ' ' | grep -oE '"name": *"'"${FAILOVER_PREFIX}"'-[^".]*"' | sed 's/.*"name": *"\([^"]*\)"/\1/' | tail -1)
+        fi
+        T4_EPOCH=""
+        if [ -n "$T4_NAME" ]; then
+          T4_WORKFLOW="name=$T4_NAME"
+          # Extract creationTimestamp for the matching workflow to get numeric T4
+          # The K8s API response has the workflow object with creationTimestamp
+          T4_CREATED=$(echo "$WORKFLOWS" | tr '\n' ' ' | grep -oE '"creationTimestamp": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"/\1/')
+          if [ -z "$T4_CREATED" ] && [ -n "$WORKFLOWS_ALL" ]; then
+            T4_CREATED=$(echo "$WORKFLOWS_ALL" | tr '\n' ' ' | grep -oE '"creationTimestamp": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"/\1/')
+          fi
+          if [ -n "$T4_CREATED" ]; then
+            # Convert ISO timestamp to Unix epoch
+            # busybox date -d handles "2026-04-05T12:00:00Z" format
+            T4_EPOCH=$(date -d "$T4_CREATED" +%s 2>/dev/null || echo "")
+          fi
+        else
+          T4_WORKFLOW="No failover workflow found"
+        fi
+
+        # Get rollout final status
+        ROLLOUT=$(curl -s --cacert $CA -H "Authorization: Bearer $TOKEN" \
+          "$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}")
+        COMPACT_R=$(echo "$ROLLOUT" | tr -d '\n' | tr -s ' ')
+        ROLLOUT_PHASE=$(echo "$COMPACT_R" | grep -oE '"phase": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"/\1/')
+        ROLLOUT_PHASE="${ROLLOUT_PHASE:-?}"
+        ROLLOUT_MSG=$(echo "$COMPACT_R" | grep -oE '"message": *"[^"]*"' | head -1 | sed 's/.*"\([^"]*\)"/\1/')
+        ROLLOUT_MSG="${ROLLOUT_MSG:-}"
+
+        T5=$(date +%s)
+
+        echo "  T0 (fault injected):     $T0"
+        echo "  T1 (alert pending):      $T1_PENDING"
+        echo "  T2 (alert firing):       $T2_ALERT"
+        echo "  T4 (failover workflow):  $T4_WORKFLOW"
+        echo "  T4 (epoch):              ${T4_EPOCH:-N/A}"
+        echo "  T5 (collection time):    $T5"
+        echo ""
+
+        # Compute deltas
+        if [ "$T1_PENDING" != "N/A" ]; then
+          DELTA_T0_T1=$((T1_PENDING - T0))
+          echo "  T0→T1 (fault → alert pending): ${DELTA_T0_T1}s"
+        fi
+        if [ "$T2_ALERT" != "N/A" ]; then
+          DELTA_T0_T2=$((T2_ALERT - T0))
+          echo "  T0→T2 (fault → alert firing):  ${DELTA_T0_T2}s"
+        fi
+        if [ "$T1_PENDING" != "N/A" ] && [ "$T2_ALERT" != "N/A" ]; then
+          DELTA_T1_T2=$((T2_ALERT - T1_PENDING))
+          echo "  T1→T2 (pending → firing):      ${DELTA_T1_T2}s"
+        fi
+        if [ -n "$T4_EPOCH" ] && [ "$T2_ALERT" != "N/A" ]; then
+          DELTA_T2_T4=$((T4_EPOCH - T2_ALERT))
+          echo "  T2→T4 (alert → failover):      ${DELTA_T2_T4}s"
+        fi
+        DELTA_TOTAL=$((T5 - T0))
+        echo "  T0→T5 (total experiment):      ${DELTA_TOTAL}s"
+        echo ""
+
+        # Query current error rates from Prometheus
+        echo "=== Prometheus Metrics Snapshot ==="
+
+        if [ "$MODE" = "sidecar" ]; then
+          ERR_Q="sum(rate(istio_requests_total{destination_app=\"podinfo\",destination_workload_namespace=\"$NS\",response_code=~\"5.*\",reporter=\"destination\"}[1m])) / sum(rate(istio_requests_total{destination_app=\"podinfo\",destination_workload_namespace=\"$NS\",reporter=\"destination\"}[1m]))"
+          LAT_Q="histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_app=\"podinfo\",destination_workload_namespace=\"$NS\",reporter=\"destination\"}[1m])) by (le))"
+        else
+          ERR_Q="sum(rate(istio_requests_total{destination_service_name=\"podinfo-stable\",destination_service_namespace=\"$NS\",response_code=~\"5.*\"}[1m])) / sum(rate(istio_requests_total{destination_service_name=\"podinfo-stable\",destination_service_namespace=\"$NS\"}[1m]))"
+          LAT_Q="histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\"podinfo-stable\",destination_service_namespace=\"$NS\"}[1m])) by (le))"
+        fi
+
+        ERR_RATE=$(curl -sf "$PROM/api/v1/query" --data-urlencode "query=$ERR_Q" | \
+          grep -oE '"value":\[[^,]+,"[^"]*"' | cut -d'"' -f4 | head -1)
+        ERR_RATE="${ERR_RATE:-no-data}"
+        P99_LAT=$(curl -sf "$PROM/api/v1/query" --data-urlencode "query=$LAT_Q" | \
+          grep -oE '"value":\[[^,]+,"[^"]*"' | cut -d'"' -f4 | head -1)
+        P99_LAT="${P99_LAT:-no-data}"
+
+        echo "  Stable error rate (1m): $ERR_RATE"
+        echo "  Stable p99 latency (1m): ${P99_LAT}ms"
+        echo ""
+
+        echo "=== Rollout Final State ==="
+        echo "  Phase:   $ROLLOUT_PHASE"
+        echo "  Message: $ROLLOUT_MSG"
+        echo ""
+
+        FAULT_PCT={{workflow.parameters.fault-percentage}}
+        FAILOVER_RAN="false"
+        if [ -n "$T4_NAME" ]; then
+          FAILOVER_RAN="true"
+        fi
+
+        if [ "$ROLLOUT_PHASE" = "Healthy" ]; then
+          if [ "$FAULT_PCT" -eq 0 ]; then
+            OUTCOME="true_negative"
+            echo "RESULT: PASS — No fault injected, canary promoted correctly (true negative)"
+          elif [ "$FAILOVER_RAN" = "true" ]; then
+            OUTCOME="remediated"
+            echo "RESULT: PASS — Fault detected, failover promoted canary ($T4_NAME)"
+          else
+            OUTCOME="false_negative"
+            echo "RESULT: FAIL — Fault injected but canary was NOT aborted (false negative)"
+          fi
+        elif [ "$ROLLOUT_PHASE" = "Degraded" ]; then
+          if [ "$FAULT_PCT" -eq 0 ]; then
+            OUTCOME="false_positive"
+            echo "RESULT: FAIL — No fault injected but canary was aborted (false positive)"
+          else
+            OUTCOME="remediated"
+            echo "RESULT: PASS — Canary correctly rejected (phase=Degraded)"
+          fi
+        else
+          OUTCOME="incomplete"
+          echo "RESULT: INCOMPLETE — Rollout phase=$ROLLOUT_PHASE (expected Healthy or Degraded)"
+        fi
+
+        echo ""
+        echo "============================================================"
+
+        # ── Structured JSON output for thesis analysis ──
+        # Emit null for N/A values so JSON stays valid
+        T1_JSON="${T1_PENDING}"; [ "$T1_JSON" = "N/A" ] && T1_JSON="null"
+        T2_JSON="${T2_ALERT}"; [ "$T2_JSON" = "N/A" ] && T2_JSON="null"
+        DT01="${DELTA_T0_T1:-null}"
+        DT12="${DELTA_T1_T2:-null}"
+        DT02="${DELTA_T0_T2:-null}"
+        cat > /tmp/timing.json <<ENDJSON
+        {
+          "experiment_id": "$(cat /proc/sys/kernel/random/uuid 2>/dev/null || echo $RANDOM-$RANDOM)",
+          "timestamp": "$(date -u '+%Y-%m-%dT%H:%M:%SZ')",
+          "mesh_mode": "$MODE",
+          "fault_percentage": {{workflow.parameters.fault-percentage}},
+          "traffic_duration_s": {{workflow.parameters.traffic-duration}},
+          "timing": {
+            "t0_fault_injected": $T0,
+            "t1_alert_pending": $T1_JSON,
+            "t2_alert_firing": $T2_JSON,
+            "t4_failover_workflow": "$T4_WORKFLOW",
+            "t4_failover_epoch": ${T4_EPOCH:-null},
+            "t5_collection": $T5
+          },
+          "deltas_seconds": {
+            "t0_to_t1": $DT01,
+            "t1_to_t2": $DT12,
+            "t0_to_t2": $DT02,
+            "t2_to_t4": $(if [ -n "$T4_EPOCH" ] && [ -n "$T2_ALERT" ] && [ "$T2_ALERT" != "null" ]; then echo $(($T4_EPOCH - $T2_ALERT)); else echo null; fi),
+            "t0_to_t5": $DELTA_TOTAL
+          },
+          "metrics_snapshot": {
+            "stable_error_rate": "$ERR_RATE",
+            "stable_p99_latency_ms": "$P99_LAT"
+          },
+          "rollout": {
+            "phase": "$ROLLOUT_PHASE",
+            "message": "$ROLLOUT_MSG"
+          },
+          "outcome": "$OUTCOME"
+        }
+        ENDJSON
+        echo "JSON artifact written to /tmp/timing.json"
+        echo "---TIMING-JSON-START---"
+        cat /tmp/timing.json
+        echo "---TIMING-JSON-END---"
+
+  # ── onExit handler — always runs ─────────────────────────────────────────────
+  - name: cleanup
+    steps:
+    - - name: cleanup-sidecar
+        template: cleanup-noop
+        when: "{{workflow.parameters.mesh-mode}} == sidecar"
+      - name: cleanup-ambient
+        template: cleanup-noop
+        when: "{{workflow.parameters.mesh-mode}} == ambient"
+    - - name: unenroll-from-mesh
+        template: label-namespace-ambient
+        arguments:
+          parameters:
+          - name: action
+            value: "remove"
+        when: "{{workflow.parameters.mesh-mode}} == ambient"
+
+  # UNUSED: retained for potential future use (sidecar VirtualService fault cleanup)
+  # Sidecar cleanup: remove VirtualService fault patch
+  - name: cleanup-sidecar-fault
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        CA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        K8S=https://kubernetes.default.svc
+        VS="$K8S/apis/networking.istio.io/v1beta1/namespaces/podinfo/virtualservices/{{workflow.parameters.rollout-name}}"
+
+        echo "=== onExit: Removing sidecar fault injection ==="
+
+        VS_JSON=$(curl -sf --cacert $CA -H "Authorization: Bearer $TOKEN" "$VS" 2>/dev/null || echo "{}")
+        HAS_FAULT=$(echo "$VS_JSON" | grep -c '"fault"' 2>/dev/null || echo "0")
+
+        if [ "$HAS_FAULT" -gt 0 ]; then
+          HTTP_CODE=$(curl -sf -X PATCH \
+            --cacert $CA \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json-patch+json" \
+            "$VS" \
+            -d '[{"op":"remove","path":"/spec/http/0/fault"}]' \
+            -o /dev/null -w "%{http_code}")
+          echo "Fault removed (HTTP $HTTP_CODE)"
+        else
+          echo "No fault found (has_fault=$HAS_FAULT) — nothing to clean up"
+        fi
+
+  # Cleanup noop: /status/503 requires no cleanup (no persistent fault)
+  - name: cleanup-noop
+    container:
+      image: curlimages/curl:8.11.1
+      command: [sh, -c]
+      args:
+      - |
+        echo "=== onExit: No persistent fault to clean up (app-level /status/503) ==="
+        echo "The /status/503 endpoint only affects the request that hits it."

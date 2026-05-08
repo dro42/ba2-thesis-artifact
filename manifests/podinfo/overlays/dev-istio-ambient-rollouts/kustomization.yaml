@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: podinfo-ambient
+
+resources:
+  - namespace.yaml
+  - rollout.yaml
+  - services.yaml
+  - waypoint.yaml
+  - waypoint-podmonitor.yaml
+  - httproute.yaml
+  - analysis-templates.yaml
+  - app-podmonitor.yaml
+  - ingress-routes.yaml
+
+# Use labels instead of commonLabels to avoid injecting into selectors
+# Argo Rollouts manages Service selectors at runtime
+labels:
+  - pairs:
+      app.kubernetes.io/name: podinfo
+      app.kubernetes.io/component: demo-app
+      app.kubernetes.io/part-of: podinfo
+      service-mesh: istio-ambient
+      delivery-method: argo-rollouts
+    includeSelectors: false

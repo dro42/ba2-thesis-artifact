@@ -1,0 +1,51 @@
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   CHAOS EXPERIMENT RESULTS — 2026-04-03T13:15:30Z[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: ============================================================[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: Configuration:[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Mesh Mode:       sidecar[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Namespace:       podinfo[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Stable Image:    ghcr.io/stefanprodan/podinfo:6.5.4[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Canary Image:    ghcr.io/stefanprodan/podinfo:6.6.0[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Fault Percent:   80%[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Traffic Duration: 150s[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: === Timing Data (T0-T5) ===[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T0 (fault injected):     1775221656[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T1 (alert pending):      1775221700[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T2 (alert firing):       1775221763[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T4 (failover workflow):  name=podinfo-failover-sidecar-rc7v5[0][0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T5 (collection time):    1775222131[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T0→T1 (fault → alert pending): 44s[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T0→T2 (fault → alert firing):  107s[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T1→T2 (pending → firing):      63s[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   T0→T5 (total experiment):      475s[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: === Prometheus Metrics Snapshot ===[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Stable error rate (1m): 0.3781476739223218[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Stable p99 latency (1m): 4.789546436285097ms[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: === Rollout Final State ===[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Phase:   Healthy[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   Message: Rollout has minimum availability[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: RESULT: PASS — Fault detected, failover promoted canary (podinfo-failover-sidecar-rc7v5[0])[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: [0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: ============================================================[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: JSON artifact written to /tmp/timing.json[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: ---TIMING-JSON-START---[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678: {[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "experiment_id": "00b6e32d-b17c-4c2b-adb7-455dbcd55875",[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "timestamp": "2026-04-03T13:15:31Z",[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "mesh_mode": "sidecar",[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "fault_percentage": 80,[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "traffic_duration_s": 150,[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "timing": {[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:     "t0_fault_injected": 1775221656,[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:     "t1_alert_pending": 1775221700,[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:     "t2_alert_firing": 1775221763,[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:     "t4_failover_workflow": "name=podinfo-failover-sidecar-rc7v5[0]",[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:     "t5_collection": 1775222131[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   },[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:   "deltas_seconds": {[0m
+[32mchaos-experiment-hjdx2-collect-timing-report-762344678:     "t0_to_t1": 44,[0m

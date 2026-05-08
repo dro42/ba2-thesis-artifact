@@ -1,0 +1,87 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ba2-istio-ambient-istiod
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: ba2-istio-ambient-istiod
+    service-mesh: istio-ambient
+    thesis-component: experiment-control
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: istiod
+    targetRevision: 1.29.1
+    helm:
+      releaseName: istio-ambient-istiod
+      values: |
+        profile: ambient
+
+        global:
+          istioNamespace: istio-system
+
+        pilot:
+          enabled: true
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          traceSampling: 1.0
+          env:
+            PILOT_ENABLE_STATUS: "true"
+            PILOT_ENABLE_PROTOCOL_SNIFFING_FOR_OUTBOUND: "true"
+            PILOT_ENABLE_PROTOCOL_SNIFFING_FOR_INBOUND: "true"
+            PILOT_ENABLE_AMBIENT: "true"
+
+        telemetry:
+          enabled: true
+          v2:
+            enabled: true
+            prometheus:
+              enabled: true
+
+        meshConfig:
+          accessLogFile: /dev/stdout
+          enableTracing: true
+          extensionProviders:
+            - name: alloy
+              opentelemetry:
+                service: alloy.monitoring.svc.cluster.local
+                port: 4317
+          defaultConfig:
+            proxyMetadata: {}
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: istio-validator-istio-system
+      jqPathExpressions:
+        - .webhooks[].failurePolicy

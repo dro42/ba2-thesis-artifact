@@ -1,0 +1,82 @@
+# Root service - routes to all podinfo pods (both stable and canary)
+# Used as the VirtualService host for Istio traffic splitting
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo
+  namespace: podinfo
+  labels:
+    app: podinfo
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 9898
+    protocol: TCP
+    name: http
+  - port: 9797
+    targetPort: 9797
+    protocol: TCP
+    name: http-metrics
+  - port: 9999
+    targetPort: 9999
+    protocol: TCP
+    name: grpc
+  selector:
+    app: podinfo
+---
+# Stable service - Argo Rollouts patches the selector with rollouts-pod-template-hash
+# to route only to the stable ReplicaSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-stable
+  namespace: podinfo
+  labels:
+    app: podinfo
+    role: stable
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 9898
+    protocol: TCP
+    name: http
+  - port: 9797
+    targetPort: 9797
+    protocol: TCP
+    name: http-metrics
+  - port: 9999
+    targetPort: 9999
+    protocol: TCP
+    name: grpc
+  selector:
+    app: podinfo
+---
+# Canary service - Argo Rollouts patches the selector with rollouts-pod-template-hash
+# to route only to the canary ReplicaSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-canary
+  namespace: podinfo
+  labels:
+    app: podinfo
+    role: canary
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 9898
+    protocol: TCP
+    name: http
+  - port: 9797
+    targetPort: 9797
+    protocol: TCP
+    name: http-metrics
+  - port: 9999
+    targetPort: 9999
+    protocol: TCP
+    name: grpc
+  selector:
+    app: podinfo

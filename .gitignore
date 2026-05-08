@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Test / build artifacts
+*.log
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Bulk experiment results — keep examples/ but never the full dataset
+**/results/raw/
+results/raw/
+batches.tar.gz
+
+# Generated figures / artifacts
+analysis/output/
+analysis/figures/
+*.tmp

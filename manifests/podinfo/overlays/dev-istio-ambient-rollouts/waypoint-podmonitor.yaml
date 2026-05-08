@@ -1,0 +1,33 @@
+# PodMonitor to scrape Istio ambient waypoint proxy metrics.
+# Without this, waypoint-generated istio_requests_total never reaches Prometheus.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: podinfo-waypoint-metrics
+  namespace: podinfo-ambient
+  labels:
+    app: podinfo
+    mesh: istio-ambient
+    metrics-role: waypoint
+spec:
+  selector:
+    matchLabels:
+      gateway.networking.k8s.io/gateway-name: waypoint
+  podMetricsEndpoints:
+    - targetPort: 15090
+      path: /stats/prometheus
+      interval: 15s
+      scrapeTimeout: 10s
+      relabelings:
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_label_gateway_networking_k8s_io_gateway_name]
+          targetLabel: gateway
+        - action: replace
+          sourceLabels: [__meta_kubernetes_pod_controller_name]
+          targetLabel: deployment
+  namespaceSelector:
+    matchNames:
+      - podinfo-ambient

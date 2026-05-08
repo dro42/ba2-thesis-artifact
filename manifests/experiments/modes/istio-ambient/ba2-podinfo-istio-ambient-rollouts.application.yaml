@@ -1,0 +1,63 @@
+# BA2 podinfo rollouts application for Istio ambient.
+# MANUAL SYNC ONLY - experiment workflows mutate the Rollout live.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ba2-podinfo-istio-ambient-rollouts
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: ba2-experiment
+    app.kubernetes.io/name: ba2-podinfo-istio-ambient-rollouts
+    service-mesh: istio-ambient
+    thesis-component: experiment-control
+  annotations:
+    argocd.argoproj.io/sync-wave: "30"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://github.com/dro42/ba2-thesis-artifact.git
+    targetRevision: main
+    path: manifests/podinfo/overlays/dev-istio-ambient-rollouts
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: podinfo-ambient
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ServerSideApply=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+  ignoreDifferences:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      jqPathExpressions:
+        - .spec.rules[].backendRefs[].weight
+    - group: ""
+      kind: Service
+      jqPathExpressions:
+        - .spec.selector
+    - group: argoproj.io
+      kind: Rollout
+      jqPathExpressions:
+        - .metadata.annotations."rollout.argoproj.io/revision"
+        - .spec.restartAt
+        - .spec.strategy.canary.steps[].analysis.analysisRunMetadata
+
+  info:
+    - name: "Requirement"
+      value: "Runs after ba2-mesh-istio-ambient is Healthy; sync manually before starting the rollback experiment"
+    - name: "Sync Mode"
+      value: "Manual only so Argo CD does not self-heal rollout image, abort, or promotion changes during the experiment"

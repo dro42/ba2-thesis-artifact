@@ -1,0 +1,73 @@
+# Sensor for podinfo stable-to-canary failover
+# Listens for Alertmanager webhook events and triggers failover workflow
+# Only triggers when alert status is "firing" (not "resolved")
+# References WorkflowTemplates instead of inlining specs (DRY)
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: podinfo-failover
+  namespace: argo-events
+spec:
+  dependencies:
+  # Sidecar mode: stable health alert
+  - name: stable-health-alert
+    eventSourceName: webhook
+    eventName: podinfo-stable-health
+    filters:
+      data:
+      - path: body.status
+        type: string
+        value:
+        - "firing"
+  # Ambient mode: stable health alert
+  - name: ambient-stable-health-alert
+    eventSourceName: webhook
+    eventName: podinfo-ambient-stable-health
+    filters:
+      data:
+      - path: body.status
+        type: string
+        value:
+        - "firing"
+  triggers:
+  # Trigger failover workflow for sidecar mode
+  - template:
+      name: failover-sidecar
+      conditions: "stable-health-alert"
+      argoWorkflow:
+        operation: submit
+        source:
+          resource:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Workflow
+            metadata:
+              generateName: podinfo-failover-sidecar-
+              namespace: argo-events
+              labels:
+                app.kubernetes.io/part-of: podinfo-automation
+                failover-mode: sidecar
+                triggered-by: prometheus-alert
+            spec:
+              workflowTemplateRef:
+                name: podinfo-failover-sidecar
+
+  # Trigger failover workflow for ambient mode
+  - template:
+      name: failover-ambient
+      conditions: "ambient-stable-health-alert"
+      argoWorkflow:
+        operation: submit
+        source:
+          resource:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Workflow
+            metadata:
+              generateName: podinfo-failover-ambient-
+              namespace: argo-events
+              labels:
+                app.kubernetes.io/part-of: podinfo-automation
+                failover-mode: ambient
+                triggered-by: prometheus-alert
+            spec:
+              workflowTemplateRef:
+                name: podinfo-failover-ambient

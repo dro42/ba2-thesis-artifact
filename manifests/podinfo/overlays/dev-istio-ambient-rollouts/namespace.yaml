@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: podinfo-ambient
+  labels:
+    drozd.cloud/public-istio-gateway: enabled
+    istio.io/dataplane-mode: ambient
+    istio.io/use-waypoint: waypoint
+  annotations:
+    traffic-method: ambient-waypoint-rollouts

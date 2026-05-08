@@ -1,0 +1,33 @@
+# Istio Ambient HTTPRoute for traffic splitting
+# Gateway API plugin modifies backendRef weights during canary rollout
+# parentRef points to Service (not Gateway) - this is the ambient pattern
+# Waypoint proxy handles L7 routing based on these weights
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: podinfo-traffic-split
+  namespace: podinfo-ambient
+  labels:
+    app: podinfo
+spec:
+  parentRefs:
+    - group: ""
+      kind: Service
+      name: podinfo
+      port: 80
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: podinfo-stable
+          port: 80
+          weight: 100
+        - group: ""
+          kind: Service
+          name: podinfo-canary
+          port: 80
+          weight: 0

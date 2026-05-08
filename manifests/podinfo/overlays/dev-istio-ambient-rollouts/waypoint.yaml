@@ -1,0 +1,16 @@
+# Istio ambient waypoint proxy for podinfo services
+# Required for L7 traffic splitting (HTTPRoute) in ambient mode
+# Without a waypoint, ztunnel only handles L4 (TCP) traffic
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: waypoint
+  namespace: podinfo-ambient
+  labels:
+    istio.io/waypoint-for: service
+spec:
+  gatewayClassName: istio-waypoint
+  listeners:
+    - name: mesh
+      port: 15008
+      protocol: HBONE

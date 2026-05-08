@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo-stable
+  labels:
+    app: podinfo
+    track: stable
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: podinfo
+      track: stable
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9797"
+      labels:
+        app: podinfo
+        track: stable
+    spec:
+      containers:
+      - name: podinfo
+        image: ghcr.io/stefanprodan/podinfo:6.5.4
+        command:
+          - ./podinfo
+          - --level=info
+          - --port=9898
+          - --port-metrics=9797
+          - --grpc-port=9999
+          - --otel-service-name=podinfo-stable
+        ports:
+        - containerPort: 9898
+          name: http
+          protocol: TCP
+        - containerPort: 9797
+          name: http-metrics
+          protocol: TCP
+        - containerPort: 9999
+          name: grpc
+          protocol: TCP
+        env:
+        - name: PODINFO_VERSION
+          value: "stable-6.5.4"
+        - name: PODINFO_UI_COLOR
+          value: "#34577c"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://alloy.monitoring.svc.cluster.local:4317"
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: grpc
+        - name: OTEL_EXPORTER_OTLP_INSECURE
+          value: "true"
+        - name: OTEL_TRACES_SAMPLER
+          value: always_on
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "service.namespace=podinfo,service.version=6.5.4,service_mesh=none,track=stable"
+        - name: PYROSCOPE_SERVER_ADDRESS
+          value: "http://pyroscope.monitoring.svc:4040"
+        - name: PYROSCOPE_APPLICATION_NAME
+          value: "podinfo"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9898
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 9898
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi

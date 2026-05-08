@@ -1,0 +1,48 @@
+# ArgoCD Application for podinfo failover automation pipeline
+# Deploys: EventSource, Sensor, WorkflowTemplates, PrometheusRule, RBAC
+# Project: ba2 (progressive delivery / GitOps automation)
+#
+# MANUAL SYNC ONLY - requires argo-events EventBus to be healthy first
+# Sync: argocd app sync podinfo-automation
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podinfo-automation
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ba2
+
+  source:
+    repoURL: https://github.com/dro42/ba2-thesis-artifact.git
+    targetRevision: main
+    path: manifests/automation
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argo-events
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
+
+  info:
+  - name: 'Purpose'
+    value: 'Event-driven stable-to-canary failover via Alertmanager -> Argo Events -> Argo Workflows'
+  - name: 'Prerequisite'
+    value: 'argo-events app must be synced and EventBus healthy before syncing this app'
+  - name: 'Trigger'
+    value: 'Alertmanager webhook fires when podinfo stable 5xx rate exceeds 10% for 2m'
+  - name: 'Manual trigger (sidecar)'
+    value: 'argo submit --from workflowtemplate/podinfo-failover-sidecar -n argo-events'
+  - name: 'Manual trigger (ambient)'
+    value: 'argo submit --from workflowtemplate/podinfo-failover-ambient -n argo-events'

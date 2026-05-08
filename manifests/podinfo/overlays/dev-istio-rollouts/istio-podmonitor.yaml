@@ -1,0 +1,30 @@
+# PodMonitor to scrape Istio Envoy sidecar metrics from podinfo pods
+# Enables per-pod Istio metrics in Prometheus with track/version labels
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: podinfo-istio-metrics
+  namespace: podinfo
+  labels:
+    app: podinfo
+    mesh: istio
+spec:
+  selector:
+    matchLabels:
+      app: podinfo
+  podMetricsEndpoints:
+    # Istio sidecar proxy exposes metrics on port 15090
+    - port: http-envoy-prom
+      path: /stats/prometheus
+      interval: 15s
+      scrapeTimeout: 10s
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_pod_label_version]
+          targetLabel: version
+        - sourceLabels: [__meta_kubernetes_pod_controller_name]
+          targetLabel: deployment
+  namespaceSelector:
+    matchNames:
+      - podinfo

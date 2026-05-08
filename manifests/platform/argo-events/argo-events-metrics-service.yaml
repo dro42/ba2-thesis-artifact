@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argo-events-controller-manager-metrics
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/name: argo-events-controller-manager
+    app.kubernetes.io/component: controller-manager
+    app.kubernetes.io/instance: argo-events
+    app.kubernetes.io/part-of: argo-events
+spec:
+  selector:
+    app.kubernetes.io/name: argo-events-controller-manager
+    app.kubernetes.io/instance: argo-events
+  ports:
+    - name: metrics
+      port: 7777
+      targetPort: metrics
+      protocol: TCP

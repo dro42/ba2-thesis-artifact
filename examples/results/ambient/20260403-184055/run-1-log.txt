@@ -1,0 +1,169 @@
+[32mchaos-experiment-5dkh7-resolve-mesh-params-4175004718: === Resolving parameters for mesh-mode: ambient ===[0m
+[32mchaos-experiment-5dkh7-resolve-mesh-params-4175004718: Namespace: podinfo-ambient[0m
+[32mchaos-experiment-5dkh7-resolve-mesh-params-4175004718: Stable SVC: http://podinfo-stable.podinfo-ambient.svc.cluster.local[0m
+[32mchaos-experiment-5dkh7-resolve-mesh-params-4175004718: time="2026-04-03T18:41:04.988Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[32mchaos-experiment-5dkh7-resolve-mesh-params-4175004718: time="2026-04-03T18:41:04.988Z" level=info msg="/tmp/namespace -> /var/run/argo/outputs/parameters//tmp/namespace" argo=true[0m
+[32mchaos-experiment-5dkh7-resolve-mesh-params-4175004718: time="2026-04-03T18:41:04.988Z" level=info msg="/tmp/stable-svc -> /var/run/argo/outputs/parameters//tmp/stable-svc" argo=true[0m
+[35mchaos-experiment-5dkh7-abort-rollout-2384978684: rollout 'podinfo' aborted[0m
+[35mchaos-experiment-5dkh7-abort-rollout-2384978684: time="2026-04-03T18:41:15.597Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[37mchaos-experiment-5dkh7-set-rollout-image-2830747046: rollout "podinfo" image updated[0m
+[37mchaos-experiment-5dkh7-set-rollout-image-2830747046: time="2026-04-03T18:41:25.953Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[34mchaos-experiment-5dkh7-disable-analysis-templates-2877631917: === Disabling AnalysisTemplate steps for experiment ===[0m
+[34mchaos-experiment-5dkh7-disable-analysis-templates-2877631917: Analysis steps removed successfully[0m
+[34mchaos-experiment-5dkh7-disable-analysis-templates-2877631917: Steps: setWeight(10)->pause(2m)->setWeight(30)->pause(2m)->setWeight(50)->pause(2m)->setWeight(100)[0m
+[34mchaos-experiment-5dkh7-disable-analysis-templates-2877631917: time="2026-04-03T18:42:19.372Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[32mchaos-experiment-5dkh7-set-rollout-image-3631820418: rollout "podinfo" image updated[0m
+[32mchaos-experiment-5dkh7-set-rollout-image-3631820418: time="2026-04-03T18:42:28.901Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2239170731: Adding ambient mesh label to argo-events namespace[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2239170731: Result: HTTP 200[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2239170731: Namespace label updated successfully[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2239170731: time="2026-04-03T18:42:44.425Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[34mchaos-experiment-5dkh7-generate-warmup-traffic-3885421551: === Generating warmup traffic for 60s ===[0m
+[34mchaos-experiment-5dkh7-generate-warmup-traffic-3885421551:   Stable: http://podinfo-stable.podinfo-ambient.svc.cluster.local[0m
+[34mchaos-experiment-5dkh7-generate-warmup-traffic-3885421551:   Canary: http://podinfo-canary.podinfo-ambient.svc.cluster.local[0m
+[34mchaos-experiment-5dkh7-generate-warmup-traffic-3885421551: Warmup complete: sent ~374 requests over 60s[0m
+[34mchaos-experiment-5dkh7-generate-warmup-traffic-3885421551: time="2026-04-03T18:43:59.605Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[35mchaos-experiment-5dkh7-wait-for-weight-938136793: === Waiting for canary to receive traffic weight > 0 ===[0m
+[35mchaos-experiment-5dkh7-wait-for-weight-938136793: [18:44:13] Phase: Paused, Step: 1[0m
+[35mchaos-experiment-5dkh7-wait-for-weight-938136793: Canary is active (phase=Paused, step=1)[0m
+[35mchaos-experiment-5dkh7-wait-for-weight-938136793: time="2026-04-03T18:44:14.454Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: === Sustained traffic (450s, ~10 req/s) ===[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799:   Stable: http://podinfo-stable.podinfo-ambient.svc.cluster.local[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799:   Canary: http://podinfo-canary.podinfo-ambient.svc.cluster.local[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799:   Fault %: 80% of stable requests → /status/503[0m
+[35mchaos-experiment-5dkh7-inject-fault-dispatch-575765445: === Fault injection via sustained traffic ===[0m
+[35mchaos-experiment-5dkh7-inject-fault-dispatch-575765445:   80% of stable requests -> /status/503[0m
+[35mchaos-experiment-5dkh7-inject-fault-dispatch-575765445:   Waiting 10s for traffic to start generating errors...[0m
+[35mchaos-experiment-5dkh7-inject-fault-dispatch-575765445:   Gate open — watch-promotion will begin polling[0m
+[35mchaos-experiment-5dkh7-inject-fault-dispatch-575765445: time="2026-04-03T18:44:44.569Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:44:56] Traffic: 200 (503s: 78)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: === Watching for automatic promotion (max 10 minutes) ===[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: Pipeline: PrometheusRule -> Alertmanager -> Argo Events -> Failover Workflow -> Promote[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: Alert pattern: PodInfoAmbient.*[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308:   >> T1 CAPTURED: alert pending since 1775241890[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: --- Phase change:  -> Paused ---[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:44:58] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:45:08] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:45:18] Traffic: 400 (503s: 161)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:45:18] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:45:29] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:45:39] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:45:40] Traffic: 600 (503s: 238)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:45:49] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:45:59] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:N/A | Rollout has minimum availability[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:46:02] Traffic: 800 (503s: 319)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308:   >> T2 CAPTURED: alert firing at 1775241969[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:46:09] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:46:19] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:46:24] Traffic: 1000 (503s: 397)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:46:29] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:46:39] Phase: Paused | Step: 3 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:46:46] Traffic: 1200 (503s: 470)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: --- Phase change: Paused -> Progressing ---[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:46:49] Phase: Progressing | Step: 7 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:46:59] Phase: Progressing | Step: 7 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:47:08] Traffic: 1400 (503s: 555)[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: --- Phase change: Progressing -> Healthy ---[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [18:47:09] Phase: Healthy | Step: 7 | Abort: false | T1:1775241890 T2:1775241969 | Rollout has minimum availability[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: [0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: SUCCESS: Canary promoted to 100%![0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: time="2026-04-03T18:47:09.716Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: time="2026-04-03T18:47:09.716Z" level=info msg="/tmp/t1_pending -> /var/run/argo/outputs/parameters//tmp/t1_pending" argo=true[0m
+[35mchaos-experiment-5dkh7-wait-for-promotion-1232267308: time="2026-04-03T18:47:09.717Z" level=info msg="/tmp/t2_firing -> /var/run/argo/outputs/parameters//tmp/t2_firing" argo=true[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:47:31] Traffic: 1600 (503s: 643)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:47:53] Traffic: 1800 (503s: 723)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:48:15] Traffic: 2000 (503s: 805)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:48:36] Traffic: 2200 (503s: 888)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:48:58] Traffic: 2400 (503s: 970)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:49:21] Traffic: 2600 (503s: 1046)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:49:42] Traffic: 2800 (503s: 1126)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:50:04] Traffic: 3000 (503s: 1199)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:50:26] Traffic: 3200 (503s: 1276)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:50:48] Traffic: 3400 (503s: 1362)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:51:10] Traffic: 3600 (503s: 1445)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:51:32] Traffic: 3800 (503s: 1522)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: [18:51:54] Traffic: 4000 (503s: 1598)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: Sustained traffic done — 4090 requests, 1635 errors (39%)[0m
+[36mchaos-experiment-5dkh7-generate-sustained-traffic-2800937799: time="2026-04-03T18:52:04.836Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: ============================================================[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   CHAOS EXPERIMENT RESULTS — 2026-04-03T18:52:18Z[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: ============================================================[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: Configuration:[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Mesh Mode:       ambient[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Namespace:       podinfo-ambient[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Stable Image:    ghcr.io/stefanprodan/podinfo:6.5.4[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Canary Image:    ghcr.io/stefanprodan/podinfo:6.6.0[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Fault Percent:   80%[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Traffic Duration: 150s[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: === Timing Data (T0-T5) ===[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T0 (fault injected):     1775241862[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T1 (alert pending):      1775241890[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T2 (alert firing):       1775241969[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T4 (failover workflow):  name=podinfo-failover-ambient-nv7tr[0][0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T5 (collection time):    1775242338[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T0→T1 (fault → alert pending): 28s[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T0→T2 (fault → alert firing):  107s[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T1→T2 (pending → firing):      79s[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   T0→T5 (total experiment):      476s[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: === Prometheus Metrics Snapshot ===[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Stable error rate (1m): 0.770224337185588[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Stable p99 latency (1m): 22.72178217821782ms[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: === Rollout Final State ===[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Phase:   Healthy[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   Message: Rollout has minimum availability[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: RESULT: PASS — Fault detected, failover promoted canary (podinfo-failover-ambient-nv7tr[0])[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: [0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: ============================================================[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: JSON artifact written to /tmp/timing.json[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: ---TIMING-JSON-START---[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: {[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "experiment_id": "4d720a7e-be2a-409b-9421-0f1b0a2ce2f2",[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "timestamp": "2026-04-03T18:52:18Z",[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "mesh_mode": "ambient",[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "fault_percentage": 80,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "traffic_duration_s": 150,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "timing": {[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t0_fault_injected": 1775241862,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t1_alert_pending": 1775241890,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t2_alert_firing": 1775241969,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t4_failover_workflow": "name=podinfo-failover-ambient-nv7tr[0]",[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t5_collection": 1775242338[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   },[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "deltas_seconds": {[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t0_to_t1": 28,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t1_to_t2": 79,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t0_to_t2": 107,[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "t0_to_t5": 476[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   },[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "metrics_snapshot": {[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "stable_error_rate": "0.770224337185588",[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "stable_p99_latency_ms": "22.72178217821782"[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   },[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "rollout": {[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "phase": "Healthy",[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:     "message": "Rollout has minimum availability"[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   },[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969:   "outcome": "remediated"[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: }[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: ---TIMING-JSON-END---[0m
+[32mchaos-experiment-5dkh7-collect-timing-report-3130005969: time="2026-04-03T18:52:19.396Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[35mchaos-experiment-5dkh7-cleanup-noop-1494287847: === onExit: No persistent fault to clean up (app-level /status/503) ===[0m
+[35mchaos-experiment-5dkh7-cleanup-noop-1494287847: The /status/503 endpoint only affects the request that hits it.[0m
+[35mchaos-experiment-5dkh7-cleanup-noop-1494287847: time="2026-04-03T18:52:28.804Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2548010540: Removing ambient mesh label from argo-events namespace[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2548010540: Result: HTTP 200[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2548010540: Namespace label updated successfully[0m
+[36mchaos-experiment-5dkh7-label-namespace-ambient-2548010540: time="2026-04-03T18:52:44.291Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[37mchaos-experiment-5dkh7-promote-rollout-full-2420768736: rollout 'podinfo' fully promoted[0m
+[37mchaos-experiment-5dkh7-promote-rollout-full-2420768736: time="2026-04-03T18:41:35.447Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[35mchaos-experiment-5dkh7-sleep-1018484949: time="2026-04-03T18:42:04.992Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[34mchaos-experiment-5dkh7-record-timestamp-4174839390: T0_FAULT_INJECTED: 1775241862 (2026-04-03T18:44:22Z)[0m
+[34mchaos-experiment-5dkh7-record-timestamp-4174839390: time="2026-04-03T18:44:23.997Z" level=info msg="sub-process exited" argo=true error="<nil>"[0m
+[34mchaos-experiment-5dkh7-record-timestamp-4174839390: time="2026-04-03T18:44:23.997Z" level=info msg="/tmp/timestamp -> /var/run/argo/outputs/parameters//tmp/timestamp" argo=true[0m

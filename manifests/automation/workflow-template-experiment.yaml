@@ -1,0 +1,154 @@
+# Experiment control WorkflowTemplates for thesis data collection
+# These are NOT part of the automated failover pipeline.
+# Use them to manually control rollout state during experiments.
+#
+# Usage:
+#   argo submit --from workflowtemplate/rollout-set-weight -n argo-events -p weight=50
+#   argo submit --from workflowtemplate/rollout-promote -n argo-events
+#   argo submit --from workflowtemplate/rollout-abort -n argo-events
+#   argo submit --from workflowtemplate/rollout-trigger-canary -n argo-events -p canary-image=ghcr.io/stefanprodan/podinfo:6.6.0
+---
+# Set canary traffic weight to an arbitrary percentage
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: rollout-set-weight
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+    thesis-component: experiment-control
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: set-weight
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo
+    - name: weight
+      value: "50"
+  templates:
+  - name: set-weight
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - set
+      - weight
+      - "{{workflow.parameters.rollout-name}}"
+      - "{{workflow.parameters.weight}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+---
+# Promote the canary (advance past current pause step)
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: rollout-promote
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+    thesis-component: experiment-control
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: promote
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo
+    - name: full
+      value: "false"
+  templates:
+  - name: promote
+    steps:
+    - - name: promote-step
+        template: promote-normal
+        when: "{{workflow.parameters.full}} == false"
+      - name: promote-full
+        template: promote-full
+        when: "{{workflow.parameters.full}} == true"
+  - name: promote-normal
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - promote
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+  - name: promote-full
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - promote
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+      - --full
+---
+# Abort the canary and roll back to 100% stable
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: rollout-abort
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+    thesis-component: experiment-control
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: abort
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo
+  templates:
+  - name: abort
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - abort
+      - "{{workflow.parameters.rollout-name}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"
+---
+# Trigger a new canary by updating the rollout image
+# This is the GitOps-correct way — but available as a workflow for scripted experiments
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: rollout-trigger-canary
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: podinfo-automation
+    thesis-component: experiment-control
+spec:
+  serviceAccountName: podinfo-failover-sa
+  entrypoint: trigger-canary
+  arguments:
+    parameters:
+    - name: rollout-name
+      value: podinfo
+    - name: rollout-namespace
+      value: podinfo
+    - name: canary-image
+      value: ghcr.io/stefanprodan/podinfo:6.6.0
+  templates:
+  - name: trigger-canary
+    container:
+      image: quay.io/argoproj/kubectl-argo-rollouts:v1.8.4
+      command: [kubectl-argo-rollouts]
+      args:
+      - set
+      - image
+      - "{{workflow.parameters.rollout-name}}"
+      - "podinfo={{workflow.parameters.canary-image}}"
+      - -n
+      - "{{workflow.parameters.rollout-namespace}}"

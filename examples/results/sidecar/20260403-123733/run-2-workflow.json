@@ -1,0 +1,2898 @@
+{
+    "metadata": {
+        "name": "chaos-experiment-cvrds",
+        "generateName": "chaos-experiment-",
+        "namespace": "argo-events",
+        "uid": "cfb56e52-aa75-4b21-8608-add730190789",
+        "resourceVersion": "89877939",
+        "generation": 24,
+        "creationTimestamp": "2026-04-03T12:51:16Z",
+        "labels": {
+            "workflows.argoproj.io/completed": "true",
+            "workflows.argoproj.io/creator": "system-admin",
+            "workflows.argoproj.io/phase": "Succeeded",
+            "workflows.argoproj.io/workflow-template": "chaos-experiment"
+        },
+        "annotations": {
+            "workflows.argoproj.io/last-seen-version": "89877754",
+            "workflows.argoproj.io/pod-name-format": "v2"
+        },
+        "managedFields": [
+            {
+                "manager": "argo",
+                "operation": "Update",
+                "apiVersion": "argoproj.io/v1alpha1",
+                "time": "2026-04-03T12:51:16Z",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:metadata": {
+                        "f:generateName": {},
+                        "f:labels": {
+                            ".": {},
+                            "f:workflows.argoproj.io/creator": {},
+                            "f:workflows.argoproj.io/workflow-template": {}
+                        }
+                    },
+                    "f:spec": {}
+                }
+            },
+            {
+                "manager": "workflow-controller",
+                "operation": "Update",
+                "apiVersion": "argoproj.io/v1alpha1",
+                "time": "2026-04-03T13:02:28Z",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:metadata": {
+                        "f:annotations": {
+                            ".": {},
+                            "f:workflows.argoproj.io/last-seen-version": {},
+                            "f:workflows.argoproj.io/pod-name-format": {}
+                        },
+                        "f:labels": {
+                            "f:workflows.argoproj.io/completed": {},
+                            "f:workflows.argoproj.io/phase": {}
+                        }
+                    },
+                    "f:status": {}
+                }
+            }
+        ]
+    },
+    "spec": {
+        "arguments": {
+            "parameters": [
+                {
+                    "name": "mesh-mode",
+                    "value": "sidecar"
+                },
+                {
+                    "name": "fault-percentage",
+                    "value": "80"
+                },
+                {
+                    "name": "traffic-duration",
+                    "value": "150"
+                }
+            ]
+        },
+        "workflowTemplateRef": {
+            "name": "chaos-experiment"
+        }
+    },
+    "status": {
+        "phase": "Succeeded",
+        "startedAt": "2026-04-03T12:51:17Z",
+        "finishedAt": "2026-04-03T13:02:28Z",
+        "estimatedDuration": 672,
+        "progress": "15/15",
+        "nodes": {
+            "chaos-experiment-cvrds": {
+                "id": "chaos-experiment-cvrds",
+                "name": "chaos-experiment-cvrds",
+                "displayName": "chaos-experiment-cvrds",
+                "type": "Steps",
+                "templateName": "chaos-pipeline",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "startedAt": "2026-04-03T12:51:17Z",
+                "finishedAt": "2026-04-03T13:02:18Z",
+                "estimatedDuration": 662,
+                "progress": "14/14",
+                "resourcesDuration": {
+                    "cpu": 132,
+                    "memory": 1362
+                },
+                "children": [
+                    "chaos-experiment-cvrds-188067078"
+                ],
+                "outboundNodes": [
+                    "chaos-experiment-cvrds-3310071438"
+                ]
+            },
+            "chaos-experiment-cvrds-120221127": {
+                "id": "chaos-experiment-cvrds-120221127",
+                "name": "chaos-experiment-cvrds[5]",
+                "displayName": "[5]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:30Z",
+                "finishedAt": "2026-04-03T12:52:40Z",
+                "estimatedDuration": 10,
+                "progress": "9/9",
+                "resourcesDuration": {
+                    "cpu": 128,
+                    "memory": 1308
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-446076994"
+                ]
+            },
+            "chaos-experiment-cvrds-120809507": {
+                "id": "chaos-experiment-cvrds-120809507",
+                "name": "chaos-experiment-cvrds[1]",
+                "displayName": "[1]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:27Z",
+                "finishedAt": "2026-04-03T12:51:37Z",
+                "estimatedDuration": 10,
+                "progress": "13/13",
+                "resourcesDuration": {
+                    "cpu": 132,
+                    "memory": 1359
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-402840179"
+                ]
+            },
+            "chaos-experiment-cvrds-121353960": {
+                "id": "chaos-experiment-cvrds-121353960",
+                "name": "chaos-experiment-cvrds[2]",
+                "displayName": "[2]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:37Z",
+                "finishedAt": "2026-04-03T12:51:47Z",
+                "estimatedDuration": 10,
+                "progress": "12/12",
+                "resourcesDuration": {
+                    "cpu": 132,
+                    "memory": 1356
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-1820856255"
+                ]
+            },
+            "chaos-experiment-cvrds-1478494018": {
+                "id": "chaos-experiment-cvrds-1478494018",
+                "name": "chaos-experiment-cvrds[4].wait-for-reconcile",
+                "displayName": "wait-for-reconcile",
+                "type": "Pod",
+                "templateName": "sleep",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:57Z",
+                "finishedAt": "2026-04-03T12:52:20Z",
+                "estimatedDuration": 25,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 4,
+                    "memory": 41
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "seconds",
+                            "value": "20"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-120221127"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-1693218162": {
+                "id": "chaos-experiment-cvrds-1693218162",
+                "name": "chaos-experiment-cvrds[9].wait-for-canary-weight",
+                "displayName": "wait-for-canary-weight",
+                "type": "Pod",
+                "templateName": "wait-for-weight",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:54:04Z",
+                "finishedAt": "2026-04-03T12:54:08Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        },
+                        {
+                            "name": "timeout",
+                            "value": "300"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-2421622955"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-1820856255": {
+                "id": "chaos-experiment-cvrds-1820856255",
+                "name": "chaos-experiment-cvrds[2].reset-to-stable",
+                "displayName": "reset-to-stable",
+                "type": "Pod",
+                "templateName": "set-rollout-image",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:37Z",
+                "finishedAt": "2026-04-03T12:51:42Z",
+                "estimatedDuration": 4,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 4
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "image",
+                            "value": "ghcr.io/stefanprodan/podinfo:6.5.4"
+                        },
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3409517021"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-187478698": {
+                "id": "chaos-experiment-cvrds-187478698",
+                "name": "chaos-experiment-cvrds[4]",
+                "displayName": "[4]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:57Z",
+                "finishedAt": "2026-04-03T12:52:30Z",
+                "estimatedDuration": 35,
+                "progress": "10/10",
+                "resourcesDuration": {
+                    "cpu": 132,
+                    "memory": 1349
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-1478494018"
+                ]
+            },
+            "chaos-experiment-cvrds-188067078": {
+                "id": "chaos-experiment-cvrds-188067078",
+                "name": "chaos-experiment-cvrds[0]",
+                "displayName": "[0]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:17Z",
+                "finishedAt": "2026-04-03T12:51:27Z",
+                "estimatedDuration": 10,
+                "progress": "14/14",
+                "resourcesDuration": {
+                    "cpu": 132,
+                    "memory": 1362
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-4252433361"
+                ]
+            },
+            "chaos-experiment-cvrds-2246473344": {
+                "id": "chaos-experiment-cvrds-2246473344",
+                "name": "chaos-experiment-cvrds[11].fault-traffic-and-watch.inject-fault",
+                "displayName": "inject-fault",
+                "type": "Pod",
+                "templateName": "inject-fault-dispatch",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds-4048380758",
+                "startedAt": "2026-04-03T12:54:24Z",
+                "finishedAt": "2026-04-03T12:54:39Z",
+                "estimatedDuration": 14,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 2,
+                    "memory": 23
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        },
+                        {
+                            "name": "stable-svc",
+                            "value": "http://podinfo-stable.podinfo.svc.cluster.local"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3355761451"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-2421622955": {
+                "id": "chaos-experiment-cvrds-2421622955",
+                "name": "chaos-experiment-cvrds[10]",
+                "displayName": "[10]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:54:14Z",
+                "finishedAt": "2026-04-03T12:54:24Z",
+                "estimatedDuration": 10,
+                "progress": "5/5",
+                "resourcesDuration": {
+                    "cpu": 116,
+                    "memory": 1177
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-3387444045"
+                ]
+            },
+            "chaos-experiment-cvrds-2863940156": {
+                "id": "chaos-experiment-cvrds-2863940156",
+                "name": "chaos-experiment-cvrds.onExit[1].unenroll-from-mesh",
+                "displayName": "unenroll-from-mesh",
+                "type": "Skipped",
+                "templateName": "label-namespace-ambient",
+                "templateScope": "local/",
+                "phase": "Skipped",
+                "boundaryID": "chaos-experiment-cvrds-332716031",
+                "message": "when 'sidecar == ambient' evaluated false",
+                "startedAt": "2026-04-03T13:02:28Z",
+                "finishedAt": "2026-04-03T13:02:28Z",
+                "nodeFlag": {}
+            },
+            "chaos-experiment-cvrds-3297975852": {
+                "id": "chaos-experiment-cvrds-3297975852",
+                "name": "chaos-experiment-cvrds[11].fault-traffic-and-watch.sustained-traffic",
+                "displayName": "sustained-traffic",
+                "type": "Pod",
+                "templateName": "generate-sustained-traffic",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds-4048380758",
+                "startedAt": "2026-04-03T12:54:24Z",
+                "finishedAt": "2026-04-03T13:01:58Z",
+                "estimatedDuration": 455,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 90,
+                    "memory": 902
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "stable-svc",
+                            "value": "http://podinfo-stable.podinfo.svc.cluster.local"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3562795237"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-3310071438": {
+                "id": "chaos-experiment-cvrds-3310071438",
+                "name": "chaos-experiment-cvrds[12].collect-results",
+                "displayName": "collect-results",
+                "type": "Pod",
+                "templateName": "collect-timing-report",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T13:02:08Z",
+                "finishedAt": "2026-04-03T13:02:13Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 4
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        },
+                        {
+                            "name": "t0",
+                            "value": "1775220857"
+                        },
+                        {
+                            "name": "stable-svc",
+                            "value": "http://podinfo-stable.podinfo.svc.cluster.local"
+                        },
+                        {
+                            "name": "t1",
+                            "value": "1775220890"
+                        },
+                        {
+                            "name": "t2",
+                            "value": "1775220952"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-332716031": {
+                "id": "chaos-experiment-cvrds-332716031",
+                "name": "chaos-experiment-cvrds.onExit",
+                "displayName": "chaos-experiment-cvrds.onExit",
+                "type": "Steps",
+                "templateName": "cleanup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "startedAt": "2026-04-03T13:02:18Z",
+                "finishedAt": "2026-04-03T13:02:28Z",
+                "estimatedDuration": 10,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "nodeFlag": {
+                    "hooked": true
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3964896747"
+                ],
+                "outboundNodes": [
+                    "chaos-experiment-cvrds-2863940156"
+                ]
+            },
+            "chaos-experiment-cvrds-3341862092": {
+                "id": "chaos-experiment-cvrds-3341862092",
+                "name": "chaos-experiment-cvrds[6]",
+                "displayName": "[6]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:40Z",
+                "finishedAt": "2026-04-03T12:52:51Z",
+                "estimatedDuration": 10,
+                "progress": "8/8",
+                "resourcesDuration": {
+                    "cpu": 128,
+                    "memory": 1305
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-3509317093"
+                ]
+            },
+            "chaos-experiment-cvrds-3343392283": {
+                "id": "chaos-experiment-cvrds-3343392283",
+                "name": "chaos-experiment-cvrds[9]",
+                "displayName": "[9]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:54:04Z",
+                "finishedAt": "2026-04-03T12:54:14Z",
+                "estimatedDuration": 10,
+                "progress": "6/6",
+                "resourcesDuration": {
+                    "cpu": 116,
+                    "memory": 1180
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-1693218162"
+                ]
+            },
+            "chaos-experiment-cvrds-3355761451": {
+                "id": "chaos-experiment-cvrds-3355761451",
+                "name": "chaos-experiment-cvrds[11].fault-traffic-and-watch.watch-promotion",
+                "displayName": "watch-promotion",
+                "type": "Pod",
+                "templateName": "wait-for-promotion",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds-4048380758",
+                "startedAt": "2026-04-03T12:54:49Z",
+                "finishedAt": "2026-04-03T12:56:54Z",
+                "estimatedDuration": 134,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 24,
+                    "memory": 244
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "t1-pending",
+                            "default": "N/A",
+                            "value": "1775220890",
+                            "valueFrom": {
+                                "path": "/tmp/t1_pending"
+                            }
+                        },
+                        {
+                            "name": "t2-firing",
+                            "default": "N/A",
+                            "value": "1775220952",
+                            "valueFrom": {
+                                "path": "/tmp/t2_firing"
+                            }
+                        }
+                    ],
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3562795237"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-3387444045": {
+                "id": "chaos-experiment-cvrds-3387444045",
+                "name": "chaos-experiment-cvrds[10].record-t0",
+                "displayName": "record-t0",
+                "type": "Pod",
+                "templateName": "record-timestamp",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:54:14Z",
+                "finishedAt": "2026-04-03T12:54:19Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 4
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "label",
+                            "value": "T0_FAULT_INJECTED"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "timestamp",
+                            "value": "1775220857",
+                            "valueFrom": {
+                                "path": "/tmp/timestamp"
+                            }
+                        }
+                    ],
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3562648142"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-3408825473": {
+                "id": "chaos-experiment-cvrds-3408825473",
+                "name": "chaos-experiment-cvrds[7]",
+                "displayName": "[7]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:51Z",
+                "finishedAt": "2026-04-03T12:52:51Z",
+                "progress": "7/7",
+                "resourcesDuration": {
+                    "cpu": 128,
+                    "memory": 1301
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-4026551087"
+                ]
+            },
+            "chaos-experiment-cvrds-3409517021": {
+                "id": "chaos-experiment-cvrds-3409517021",
+                "name": "chaos-experiment-cvrds[3]",
+                "displayName": "[3]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:47Z",
+                "finishedAt": "2026-04-03T12:51:57Z",
+                "estimatedDuration": 10,
+                "progress": "11/11",
+                "resourcesDuration": {
+                    "cpu": 132,
+                    "memory": 1352
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-852418745"
+                ]
+            },
+            "chaos-experiment-cvrds-3410649854": {
+                "id": "chaos-experiment-cvrds-3410649854",
+                "name": "chaos-experiment-cvrds[8]",
+                "displayName": "[8]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:51Z",
+                "finishedAt": "2026-04-03T12:54:04Z",
+                "estimatedDuration": 73,
+                "progress": "7/7",
+                "resourcesDuration": {
+                    "cpu": 128,
+                    "memory": 1301
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-3746128676"
+                ]
+            },
+            "chaos-experiment-cvrds-3509317093": {
+                "id": "chaos-experiment-cvrds-3509317093",
+                "name": "chaos-experiment-cvrds[6].trigger-canary",
+                "displayName": "trigger-canary",
+                "type": "Pod",
+                "templateName": "set-rollout-image",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:40Z",
+                "finishedAt": "2026-04-03T12:52:47Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 4
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "image",
+                            "value": "ghcr.io/stefanprodan/podinfo:6.6.0"
+                        },
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3408825473"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-3562648142": {
+                "id": "chaos-experiment-cvrds-3562648142",
+                "name": "chaos-experiment-cvrds[11]",
+                "displayName": "[11]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:54:24Z",
+                "finishedAt": "2026-04-03T13:02:08Z",
+                "estimatedDuration": 464,
+                "progress": "4/4",
+                "resourcesDuration": {
+                    "cpu": 116,
+                    "memory": 1173
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-4048380758"
+                ]
+            },
+            "chaos-experiment-cvrds-3562795237": {
+                "id": "chaos-experiment-cvrds-3562795237",
+                "name": "chaos-experiment-cvrds[12]",
+                "displayName": "[12]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T13:02:08Z",
+                "finishedAt": "2026-04-03T13:02:18Z",
+                "estimatedDuration": 10,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 4
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-3310071438"
+                ]
+            },
+            "chaos-experiment-cvrds-3613622079": {
+                "id": "chaos-experiment-cvrds-3613622079",
+                "name": "chaos-experiment-cvrds.onExit[0].cleanup-sidecar",
+                "displayName": "cleanup-sidecar",
+                "type": "Pod",
+                "templateName": "cleanup-noop",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds-332716031",
+                "startedAt": "2026-04-03T13:02:18Z",
+                "finishedAt": "2026-04-03T13:02:23Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-810954638"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-3746128676": {
+                "id": "chaos-experiment-cvrds-3746128676",
+                "name": "chaos-experiment-cvrds[8].warmup-traffic",
+                "displayName": "warmup-traffic",
+                "type": "Pod",
+                "templateName": "generate-warmup-traffic",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:51Z",
+                "finishedAt": "2026-04-03T12:53:54Z",
+                "estimatedDuration": 63,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 12,
+                    "memory": 121
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "stable-svc",
+                            "value": "http://podinfo-stable.podinfo.svc.cluster.local"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3343392283"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-3753509684": {
+                "id": "chaos-experiment-cvrds-3753509684",
+                "name": "chaos-experiment-cvrds.onExit[0].cleanup-ambient",
+                "displayName": "cleanup-ambient",
+                "type": "Skipped",
+                "templateName": "cleanup-noop",
+                "templateScope": "local/",
+                "phase": "Skipped",
+                "boundaryID": "chaos-experiment-cvrds-332716031",
+                "message": "when 'sidecar == ambient' evaluated false",
+                "startedAt": "2026-04-03T13:02:18Z",
+                "finishedAt": "2026-04-03T13:02:18Z",
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-810954638"
+                ]
+            },
+            "chaos-experiment-cvrds-3964896747": {
+                "id": "chaos-experiment-cvrds-3964896747",
+                "name": "chaos-experiment-cvrds.onExit[0]",
+                "displayName": "[0]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds-332716031",
+                "startedAt": "2026-04-03T13:02:18Z",
+                "finishedAt": "2026-04-03T13:02:28Z",
+                "estimatedDuration": 10,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-3613622079",
+                    "chaos-experiment-cvrds-3753509684"
+                ]
+            },
+            "chaos-experiment-cvrds-4026551087": {
+                "id": "chaos-experiment-cvrds-4026551087",
+                "name": "chaos-experiment-cvrds[7].enroll-in-mesh",
+                "displayName": "enroll-in-mesh",
+                "type": "Skipped",
+                "templateName": "label-namespace-ambient",
+                "templateScope": "local/",
+                "phase": "Skipped",
+                "boundaryID": "chaos-experiment-cvrds",
+                "message": "when 'sidecar == ambient' evaluated false",
+                "startedAt": "2026-04-03T12:52:51Z",
+                "finishedAt": "2026-04-03T12:52:51Z",
+                "progress": "7/7",
+                "resourcesDuration": {
+                    "cpu": 128,
+                    "memory": 1301
+                },
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-3410649854"
+                ]
+            },
+            "chaos-experiment-cvrds-402840179": {
+                "id": "chaos-experiment-cvrds-402840179",
+                "name": "chaos-experiment-cvrds[1].abort-any-canary",
+                "displayName": "abort-any-canary",
+                "type": "Pod",
+                "templateName": "abort-rollout",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:27Z",
+                "finishedAt": "2026-04-03T12:51:31Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-121353960"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-4048380758": {
+                "id": "chaos-experiment-cvrds-4048380758",
+                "name": "chaos-experiment-cvrds[11].fault-traffic-and-watch",
+                "displayName": "fault-traffic-and-watch",
+                "type": "DAG",
+                "templateName": "fault-traffic-watch-dag",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:54:24Z",
+                "finishedAt": "2026-04-03T13:02:08Z",
+                "estimatedDuration": 464,
+                "progress": "4/4",
+                "resourcesDuration": {
+                    "cpu": 116,
+                    "memory": 1173
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        },
+                        {
+                            "name": "stable-svc",
+                            "value": "http://podinfo-stable.podinfo.svc.cluster.local"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "t1-pending",
+                            "value": "1775220890"
+                        },
+                        {
+                            "name": "t2-firing",
+                            "value": "1775220952"
+                        }
+                    ]
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3297975852",
+                    "chaos-experiment-cvrds-2246473344"
+                ],
+                "outboundNodes": [
+                    "chaos-experiment-cvrds-3297975852",
+                    "chaos-experiment-cvrds-3355761451"
+                ]
+            },
+            "chaos-experiment-cvrds-4252433361": {
+                "id": "chaos-experiment-cvrds-4252433361",
+                "name": "chaos-experiment-cvrds[0].resolve-params",
+                "displayName": "resolve-params",
+                "type": "Pod",
+                "templateName": "resolve-mesh-params",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:17Z",
+                "finishedAt": "2026-04-03T12:51:21Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo",
+                            "valueFrom": {
+                                "path": "/tmp/namespace"
+                            }
+                        },
+                        {
+                            "name": "stable-svc",
+                            "value": "http://podinfo-stable.podinfo.svc.cluster.local",
+                            "valueFrom": {
+                                "path": "/tmp/stable-svc"
+                            }
+                        }
+                    ],
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-120809507"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-446076994": {
+                "id": "chaos-experiment-cvrds-446076994",
+                "name": "chaos-experiment-cvrds[5].disable-analysis",
+                "displayName": "disable-analysis",
+                "type": "Pod",
+                "templateName": "disable-analysis-templates",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:52:30Z",
+                "finishedAt": "2026-04-03T12:52:35Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-3341862092"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            },
+            "chaos-experiment-cvrds-810954638": {
+                "id": "chaos-experiment-cvrds-810954638",
+                "name": "chaos-experiment-cvrds.onExit[1]",
+                "displayName": "[1]",
+                "type": "StepGroup",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds-332716031",
+                "startedAt": "2026-04-03T13:02:28Z",
+                "finishedAt": "2026-04-03T13:02:28Z",
+                "nodeFlag": {},
+                "children": [
+                    "chaos-experiment-cvrds-2863940156"
+                ]
+            },
+            "chaos-experiment-cvrds-852418745": {
+                "id": "chaos-experiment-cvrds-852418745",
+                "name": "chaos-experiment-cvrds[3].promote-reset",
+                "displayName": "promote-reset",
+                "type": "Pod",
+                "templateName": "promote-rollout-full",
+                "templateScope": "local/",
+                "phase": "Succeeded",
+                "boundaryID": "chaos-experiment-cvrds",
+                "startedAt": "2026-04-03T12:51:47Z",
+                "finishedAt": "2026-04-03T12:51:52Z",
+                "estimatedDuration": 5,
+                "progress": "1/1",
+                "resourcesDuration": {
+                    "cpu": 0,
+                    "memory": 3
+                },
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "value": "podinfo"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "exitCode": "0"
+                },
+                "children": [
+                    "chaos-experiment-cvrds-187478698"
+                ],
+                "hostNodeName": "shiggy.local-8a371200",
+                "taskResultSynced": true
+            }
+        },
+        "storedTemplates": {
+            "namespaced/chaos-experiment/abort-rollout": {
+                "name": "abort-rollout",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "quay.io/argoproj/kubectl-argo-rollouts:v1.8.4",
+                    "command": [
+                        "kubectl-argo-rollouts"
+                    ],
+                    "args": [
+                        "abort",
+                        "{{workflow.parameters.rollout-name}}",
+                        "-n",
+                        "{{inputs.parameters.namespace}}"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/chaos-pipeline": {
+                "name": "chaos-pipeline",
+                "inputs": {},
+                "outputs": {},
+                "metadata": {},
+                "steps": [
+                    [
+                        {
+                            "name": "resolve-params",
+                            "template": "resolve-mesh-params",
+                            "arguments": {}
+                        }
+                    ],
+                    [
+                        {
+                            "name": "abort-any-canary",
+                            "template": "abort-rollout",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    }
+                                ]
+                            },
+                            "continueOn": {
+                                "failed": true
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "reset-to-stable",
+                            "template": "set-rollout-image",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "image",
+                                        "value": "{{workflow.parameters.stable-image}}"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    }
+                                ]
+                            },
+                            "continueOn": {
+                                "failed": true
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "promote-reset",
+                            "template": "promote-rollout-full",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    }
+                                ]
+                            },
+                            "continueOn": {
+                                "failed": true
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "wait-for-reconcile",
+                            "template": "sleep",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "seconds",
+                                        "value": "20"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "disable-analysis",
+                            "template": "disable-analysis-templates",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "trigger-canary",
+                            "template": "set-rollout-image",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "image",
+                                        "value": "{{workflow.parameters.canary-image}}"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "enroll-in-mesh",
+                            "template": "label-namespace-ambient",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "action",
+                                        "value": "add"
+                                    }
+                                ]
+                            },
+                            "when": "{{workflow.parameters.mesh-mode}} == ambient"
+                        }
+                    ],
+                    [
+                        {
+                            "name": "warmup-traffic",
+                            "template": "generate-warmup-traffic",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "stable-svc",
+                                        "value": "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "wait-for-canary-weight",
+                            "template": "wait-for-weight",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    },
+                                    {
+                                        "name": "timeout",
+                                        "value": "300"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "record-t0",
+                            "template": "record-timestamp",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "label",
+                                        "value": "T0_FAULT_INJECTED"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "fault-traffic-and-watch",
+                            "template": "fault-traffic-watch-dag",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    },
+                                    {
+                                        "name": "stable-svc",
+                                        "value": "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "collect-results",
+                            "template": "collect-timing-report",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                    },
+                                    {
+                                        "name": "t0",
+                                        "value": "{{steps.record-t0.outputs.parameters.timestamp}}"
+                                    },
+                                    {
+                                        "name": "stable-svc",
+                                        "value": "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+                                    },
+                                    {
+                                        "name": "t1",
+                                        "value": "{{steps.fault-traffic-and-watch.outputs.parameters.t1-pending}}"
+                                    },
+                                    {
+                                        "name": "t2",
+                                        "value": "{{steps.fault-traffic-and-watch.outputs.parameters.t2-firing}}"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ]
+            },
+            "namespaced/chaos-experiment/cleanup": {
+                "name": "cleanup",
+                "inputs": {},
+                "outputs": {},
+                "metadata": {},
+                "steps": [
+                    [
+                        {
+                            "name": "cleanup-sidecar",
+                            "template": "cleanup-noop",
+                            "arguments": {},
+                            "when": "{{workflow.parameters.mesh-mode}} == sidecar"
+                        },
+                        {
+                            "name": "cleanup-ambient",
+                            "template": "cleanup-noop",
+                            "arguments": {},
+                            "when": "{{workflow.parameters.mesh-mode}} == ambient"
+                        }
+                    ],
+                    [
+                        {
+                            "name": "unenroll-from-mesh",
+                            "template": "label-namespace-ambient",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "action",
+                                        "value": "remove"
+                                    }
+                                ]
+                            },
+                            "when": "{{workflow.parameters.mesh-mode}} == ambient"
+                        }
+                    ]
+                ]
+            },
+            "namespaced/chaos-experiment/cleanup-noop": {
+                "name": "cleanup-noop",
+                "inputs": {},
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "echo \"=== onExit: No persistent fault to clean up (app-level /status/503) ===\"\necho \"The /status/503 endpoint only affects the request that hits it.\"\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/cleanup-sidecar-fault": {
+                "name": "cleanup-sidecar-fault",
+                "inputs": {},
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nVS=\"$K8S/apis/networking.istio.io/v1beta1/namespaces/podinfo/virtualservices/{{workflow.parameters.rollout-name}}\"\n\necho \"=== onExit: Removing sidecar fault injection ===\"\n\nVS_JSON=$(curl -sf --cacert $CA -H \"Authorization: Bearer $TOKEN\" \"$VS\" 2\u003e/dev/null || echo \"{}\")\nHAS_FAULT=$(echo \"$VS_JSON\" | grep -c '\"fault\"' 2\u003e/dev/null || echo \"0\")\n\nif [ \"$HAS_FAULT\" -gt 0 ]; then\n  HTTP_CODE=$(curl -sf -X PATCH \\\n    --cacert $CA \\\n    -H \"Authorization: Bearer $TOKEN\" \\\n    -H \"Content-Type: application/json-patch+json\" \\\n    \"$VS\" \\\n    -d '[{\"op\":\"remove\",\"path\":\"/spec/http/0/fault\"}]' \\\n    -o /dev/null -w \"%{http_code}\")\n  echo \"Fault removed (HTTP $HTTP_CODE)\"\nelse\n  echo \"No fault found (has_fault=$HAS_FAULT) — nothing to clean up\"\nfi\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/collect-timing-report": {
+                "name": "collect-timing-report",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        },
+                        {
+                            "name": "t0"
+                        },
+                        {
+                            "name": "stable-svc"
+                        },
+                        {
+                            "name": "t1"
+                        },
+                        {
+                            "name": "t2"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nPROM=\"{{workflow.parameters.prometheus-url}}\"\nNS=\"{{inputs.parameters.namespace}}\"\nMODE=\"{{workflow.parameters.mesh-mode}}\"\nT0={{inputs.parameters.t0}}\n\necho \"============================================================\"\necho \"  CHAOS EXPERIMENT RESULTS — $(date -u '+%Y-%m-%dT%H:%M:%SZ')\"\necho \"============================================================\"\necho \"\"\necho \"Configuration:\"\necho \"  Mesh Mode:       $MODE\"\necho \"  Namespace:       $NS\"\necho \"  Stable Image:    {{workflow.parameters.stable-image}}\"\necho \"  Canary Image:    {{workflow.parameters.canary-image}}\"\necho \"  Fault Percent:   {{workflow.parameters.fault-percentage}}%\"\necho \"  Traffic Duration: {{workflow.parameters.traffic-duration}}s\"\necho \"\"\n\n# T0: fault injection start (passed from earlier step)\necho \"=== Timing Data (T0-T5) ===\"\n\n# T1/T2: captured live in the watch-promotion polling loop\nT1_PENDING=\"{{inputs.parameters.t1}}\"\nT2_ALERT=\"{{inputs.parameters.t2}}\"\n\nif [ \"$MODE\" = \"sidecar\" ]; then\n  STABLE_LABEL=\"destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",reporter=\\\"destination\\\"\"\nelse\n  STABLE_LABEL=\"destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\"\"\nfi\n\n# T4: check if a failover workflow ran (query K8s API for recent workflows)\n# Use labelSelector if labels exist, fall back to name grep\nFAILOVER_PREFIX=\"podinfo-failover-${MODE}\"\nWORKFLOWS=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n  \"$K8S/apis/argoproj.io/v1alpha1/namespaces/argo-events/workflows?labelSelector=triggered-by=prometheus-alert,failover-mode=${MODE}\" \\\n  || echo \"{}\")\n# Extract latest failover workflow name\n# K8s API JSON uses \"name\": \"value\" with space after colon\nT4_NAME=$(echo \"$WORKFLOWS\" | tr '\\n' ' ' | grep -oE '\"name\": *\"'\"${FAILOVER_PREFIX}\"'-[^\".]*\"' | sed 's/.*\"name\": *\"\\([^\"]*\\)\"/\\1/' | tail -1)\n# Fallback: if label selector returned nothing, try without labels\nif [ -z \"$T4_NAME\" ]; then\n  WORKFLOWS_ALL=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n    \"$K8S/apis/argoproj.io/v1alpha1/namespaces/argo-events/workflows\" || echo \"{}\")\n  T4_NAME=$(echo \"$WORKFLOWS_ALL\" | tr '\\n' ' ' | grep -oE '\"name\": *\"'\"${FAILOVER_PREFIX}\"'-[^\".]*\"' | sed 's/.*\"name\": *\"\\([^\"]*\\)\"/\\1/' | tail -1)\nfi\nif [ -n \"$T4_NAME\" ]; then\n  T4_WORKFLOW=\"name=$T4_NAME\"\nelse\n  T4_WORKFLOW=\"No failover workflow found\"\nfi\n\n# Get rollout final status\nROLLOUT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n  \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}\")\nCOMPACT_R=$(echo \"$ROLLOUT\" | tr -d '\\n' | tr -s ' ')\nROLLOUT_PHASE=$(echo \"$COMPACT_R\" | grep -oE '\"phase\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\nROLLOUT_PHASE=\"${ROLLOUT_PHASE:-?}\"\nROLLOUT_MSG=$(echo \"$COMPACT_R\" | grep -oE '\"message\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\nROLLOUT_MSG=\"${ROLLOUT_MSG:-}\"\n\nT5=$(date +%s)\n\necho \"  T0 (fault injected):     $T0\"\necho \"  T1 (alert pending):      $T1_PENDING\"\necho \"  T2 (alert firing):       $T2_ALERT\"\necho \"  T4 (failover workflow):  $T4_WORKFLOW\"\necho \"  T5 (collection time):    $T5\"\necho \"\"\n\n# Compute deltas\nif [ \"$T1_PENDING\" != \"N/A\" ]; then\n  DELTA_T0_T1=$((T1_PENDING - T0))\n  echo \"  T0→T1 (fault → alert pending): ${DELTA_T0_T1}s\"\nfi\nif [ \"$T2_ALERT\" != \"N/A\" ]; then\n  DELTA_T0_T2=$((T2_ALERT - T0))\n  echo \"  T0→T2 (fault → alert firing):  ${DELTA_T0_T2}s\"\nfi\nif [ \"$T1_PENDING\" != \"N/A\" ] \u0026\u0026 [ \"$T2_ALERT\" != \"N/A\" ]; then\n  DELTA_T1_T2=$((T2_ALERT - T1_PENDING))\n  echo \"  T1→T2 (pending → firing):      ${DELTA_T1_T2}s\"\nfi\nDELTA_TOTAL=$((T5 - T0))\necho \"  T0→T5 (total experiment):      ${DELTA_TOTAL}s\"\necho \"\"\n\n# Query current error rates from Prometheus\necho \"=== Prometheus Metrics Snapshot ===\"\n\nif [ \"$MODE\" = \"sidecar\" ]; then\n  ERR_Q=\"sum(rate(istio_requests_total{destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",response_code=~\\\"5.*\\\",reporter=\\\"destination\\\"}[1m])) / sum(rate(istio_requests_total{destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",reporter=\\\"destination\\\"}[1m]))\"\n  LAT_Q=\"histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",reporter=\\\"destination\\\"}[1m])) by (le))\"\nelse\n  ERR_Q=\"sum(rate(istio_requests_total{destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\",response_code=~\\\"5.*\\\"}[1m])) / sum(rate(istio_requests_total{destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\"}[1m]))\"\n  LAT_Q=\"histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\"}[1m])) by (le))\"\nfi\n\nERR_RATE=$(curl -sf \"$PROM/api/v1/query\" --data-urlencode \"query=$ERR_Q\" | \\\n  grep -oE '\"value\":\\[[^,]+,\"[^\"]*\"' | cut -d'\"' -f4 | head -1)\nERR_RATE=\"${ERR_RATE:-no-data}\"\nP99_LAT=$(curl -sf \"$PROM/api/v1/query\" --data-urlencode \"query=$LAT_Q\" | \\\n  grep -oE '\"value\":\\[[^,]+,\"[^\"]*\"' | cut -d'\"' -f4 | head -1)\nP99_LAT=\"${P99_LAT:-no-data}\"\n\necho \"  Stable error rate (1m): $ERR_RATE\"\necho \"  Stable p99 latency (1m): ${P99_LAT}ms\"\necho \"\"\n\necho \"=== Rollout Final State ===\"\necho \"  Phase:   $ROLLOUT_PHASE\"\necho \"  Message: $ROLLOUT_MSG\"\necho \"\"\n\nFAULT_PCT={{workflow.parameters.fault-percentage}}\nFAILOVER_RAN=\"false\"\nif [ -n \"$T4_NAME\" ]; then\n  FAILOVER_RAN=\"true\"\nfi\n\nif [ \"$ROLLOUT_PHASE\" = \"Healthy\" ]; then\n  if [ \"$FAULT_PCT\" -eq 0 ]; then\n    OUTCOME=\"true_negative\"\n    echo \"RESULT: PASS — No fault injected, canary promoted correctly (true negative)\"\n  elif [ \"$FAILOVER_RAN\" = \"true\" ]; then\n    OUTCOME=\"remediated\"\n    echo \"RESULT: PASS — Fault detected, failover promoted canary ($T4_NAME)\"\n  else\n    OUTCOME=\"false_negative\"\n    echo \"RESULT: FAIL — Fault injected but canary was NOT aborted (false negative)\"\n  fi\nelif [ \"$ROLLOUT_PHASE\" = \"Degraded\" ]; then\n  if [ \"$FAULT_PCT\" -eq 0 ]; then\n    OUTCOME=\"false_positive\"\n    echo \"RESULT: FAIL — No fault injected but canary was aborted (false positive)\"\n  else\n    OUTCOME=\"remediated\"\n    echo \"RESULT: PASS — Canary correctly rejected (phase=Degraded)\"\n  fi\nelse\n  OUTCOME=\"incomplete\"\n  echo \"RESULT: INCOMPLETE — Rollout phase=$ROLLOUT_PHASE (expected Healthy or Degraded)\"\nfi\n\necho \"\"\necho \"============================================================\"\n\n# ── Structured JSON output for thesis analysis ──\n# Emit null for N/A values so JSON stays valid\nT1_JSON=\"${T1_PENDING}\"; [ \"$T1_JSON\" = \"N/A\" ] \u0026\u0026 T1_JSON=\"null\"\nT2_JSON=\"${T2_ALERT}\"; [ \"$T2_JSON\" = \"N/A\" ] \u0026\u0026 T2_JSON=\"null\"\nDT01=\"${DELTA_T0_T1:-null}\"\nDT12=\"${DELTA_T1_T2:-null}\"\nDT02=\"${DELTA_T0_T2:-null}\"\ncat \u003e /tmp/timing.json \u003c\u003cENDJSON\n{\n  \"experiment_id\": \"$(cat /proc/sys/kernel/random/uuid 2\u003e/dev/null || echo $RANDOM-$RANDOM)\",\n  \"timestamp\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\",\n  \"mesh_mode\": \"$MODE\",\n  \"fault_percentage\": {{workflow.parameters.fault-percentage}},\n  \"traffic_duration_s\": {{workflow.parameters.traffic-duration}},\n  \"timing\": {\n    \"t0_fault_injected\": $T0,\n    \"t1_alert_pending\": $T1_JSON,\n    \"t2_alert_firing\": $T2_JSON,\n    \"t4_failover_workflow\": \"$T4_WORKFLOW\",\n    \"t5_collection\": $T5\n  },\n  \"deltas_seconds\": {\n    \"t0_to_t1\": $DT01,\n    \"t1_to_t2\": $DT12,\n    \"t0_to_t2\": $DT02,\n    \"t0_to_t5\": $DELTA_TOTAL\n  },\n  \"metrics_snapshot\": {\n    \"stable_error_rate\": \"$ERR_RATE\",\n    \"stable_p99_latency_ms\": \"$P99_LAT\"\n  },\n  \"rollout\": {\n    \"phase\": \"$ROLLOUT_PHASE\",\n    \"message\": \"$ROLLOUT_MSG\"\n  },\n  \"outcome\": \"$OUTCOME\"\n}\nENDJSON\necho \"JSON artifact written to /tmp/timing.json\"\necho \"---TIMING-JSON-START---\"\ncat /tmp/timing.json\necho \"---TIMING-JSON-END---\"\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/disable-analysis-templates": {
+                "name": "disable-analysis-templates",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\nROLLOUT_NAME=\"{{workflow.parameters.rollout-name}}\"\n\necho \"=== Disabling AnalysisTemplate steps for experiment ===\"\n\n# Replace canary steps: keep setWeight + pause, remove analysis.\n# Pauses must be \u003e= 2m so alerts (for: 1m) have time to fire\n# during canary progression before it reaches 100%.\nPATCH='{\n  \"spec\": {\n    \"strategy\": {\n      \"canary\": {\n        \"steps\": [\n          {\"setWeight\": 10},\n          {\"pause\": {\"duration\": \"2m\"}},\n          {\"setWeight\": 30},\n          {\"pause\": {\"duration\": \"2m\"}},\n          {\"setWeight\": 50},\n          {\"pause\": {\"duration\": \"2m\"}},\n          {\"setWeight\": 100}\n        ]\n      }\n    }\n  }\n}'\n\nRESULT=$(curl -sf -X PATCH \\\n  --cacert $CA \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H \"Content-Type: application/merge-patch+json\" \\\n  \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/$ROLLOUT_NAME\" \\\n  -d \"$PATCH\" -o /dev/null -w \"%{http_code}\")\n\nif [ \"$RESULT\" = \"200\" ]; then\n  echo \"Analysis steps removed successfully\"\n  echo \"Steps: setWeight(10)-\u003epause(2m)-\u003esetWeight(30)-\u003epause(2m)-\u003esetWeight(50)-\u003epause(2m)-\u003esetWeight(100)\"\nelse\n  echo \"WARNING: Failed to patch rollout (HTTP $RESULT)\"\n  echo \"AnalysisTemplate may race with event-driven pipeline\"\nfi\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/fault-traffic-watch-dag": {
+                "name": "fault-traffic-watch-dag",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        },
+                        {
+                            "name": "stable-svc"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "t1-pending",
+                            "valueFrom": {
+                                "parameter": "{{tasks.watch-promotion.outputs.parameters.t1-pending}}"
+                            }
+                        },
+                        {
+                            "name": "t2-firing",
+                            "valueFrom": {
+                                "parameter": "{{tasks.watch-promotion.outputs.parameters.t2-firing}}"
+                            }
+                        }
+                    ]
+                },
+                "metadata": {},
+                "dag": {
+                    "tasks": [
+                        {
+                            "name": "inject-fault",
+                            "template": "inject-fault-dispatch",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{inputs.parameters.namespace}}"
+                                    },
+                                    {
+                                        "name": "stable-svc",
+                                        "value": "{{inputs.parameters.stable-svc}}"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "sustained-traffic",
+                            "template": "generate-sustained-traffic",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "stable-svc",
+                                        "value": "{{inputs.parameters.stable-svc}}"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "watch-promotion",
+                            "template": "wait-for-promotion",
+                            "arguments": {
+                                "parameters": [
+                                    {
+                                        "name": "namespace",
+                                        "value": "{{inputs.parameters.namespace}}"
+                                    }
+                                ]
+                            },
+                            "dependencies": [
+                                "inject-fault"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "namespaced/chaos-experiment/generate-sustained-traffic": {
+                "name": "generate-sustained-traffic",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "stable-svc"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "SVC=\"{{inputs.parameters.stable-svc}}\"\nCANARY_SVC=$(echo \"$SVC\" | sed 's/podinfo-stable/podinfo-canary/')\nFAULT_PCT={{workflow.parameters.fault-percentage}}\nTOTAL=$(({{workflow.parameters.traffic-duration}} + 300))\n\necho \"=== Sustained traffic (${TOTAL}s, ~10 req/s) ===\"\necho \"  Stable: $SVC\"\necho \"  Canary: $CANARY_SVC\"\necho \"  Fault %: ${FAULT_PCT}% of stable requests → /status/503\"\n\nCOUNT=0\nERRORS=0\nEND=$(($(date +%s) + TOTAL))\n\nwhile [ \"$(date +%s)\" -lt \"$END\" ]; do\n  # Stable traffic: FAULT_PCT% hit /status/503, rest hit /\n  RAND=$((RANDOM % 100))\n  if [ \"$RAND\" -lt \"$FAULT_PCT\" ]; then\n    curl -s -o /dev/null --max-time 2 \"$SVC/status/503\" 2\u003e/dev/null \u0026\n    ERRORS=$((ERRORS + 1))\n  else\n    curl -s -o /dev/null --max-time 2 \"$SVC/\" 2\u003e/dev/null \u0026\n  fi\n  # Canary traffic: always healthy\n  curl -s -o /dev/null --max-time 2 \"$CANARY_SVC/\" 2\u003e/dev/null \u0026\n  wait\n  COUNT=$((COUNT + 2))\n  [ $((COUNT % 200)) -eq 0 ] \u0026\u0026 echo \"[$(date +%H:%M:%S)] Traffic: $COUNT (503s: $ERRORS)\"\n  sleep 0.2\ndone\n\nPCT=0\n[ \"$COUNT\" -gt 0 ] \u0026\u0026 PCT=$((ERRORS * 100 / COUNT))\necho \"Sustained traffic done — $COUNT requests, $ERRORS errors (${PCT}%)\"\n"
+                    ],
+                    "resources": {}
+                },
+                "activeDeadlineSeconds": 600
+            },
+            "namespaced/chaos-experiment/generate-traffic": {
+                "name": "generate-traffic",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "stable-svc"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "SVC=\"{{inputs.parameters.stable-svc}}\"\nDURATION={{workflow.parameters.traffic-duration}}\n\necho \"=== Traffic generation (${DURATION}s, ~20 req/s) ===\"\necho \"Target: $SVC\"\n\nCOUNT=0\nERRORS=0\nEND=$(($(date +%s) + DURATION))\n\nwhile [ $(date +%s) -lt $END ]; do\n  STATUS=$(curl -s -o /dev/null -w \"%{http_code}\" --max-time 2 \"$SVC/\" 2\u003e/dev/null || echo \"000\")\n  COUNT=$((COUNT + 1))\n  [ \"$STATUS\" = \"503\" ] || [ \"$STATUS\" = \"500\" ] \u0026\u0026 ERRORS=$((ERRORS + 1))\n\n  if [ $((COUNT % 200)) -eq 0 ]; then\n    PCT=$(( ERRORS * 100 / COUNT ))\n    echo \"[$(date +%H:%M:%S)] Requests: $COUNT | 5xx: $ERRORS (${PCT}%)\"\n  fi\n  sleep 0.05\ndone\n\nPCT=$(( ERRORS * 100 / COUNT ))\necho \"Traffic done — $COUNT requests, $ERRORS errors (${PCT}%)\"\n"
+                    ],
+                    "resources": {}
+                },
+                "activeDeadlineSeconds": 300
+            },
+            "namespaced/chaos-experiment/generate-warmup-traffic": {
+                "name": "generate-warmup-traffic",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "stable-svc"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "SVC=\"{{inputs.parameters.stable-svc}}\"\n# Derive canary URL from stable URL\nCANARY_SVC=$(echo \"$SVC\" | sed 's/podinfo-stable/podinfo-canary/')\n\necho \"=== Generating warmup traffic for 60s ===\"\necho \"  Stable: $SVC\"\necho \"  Canary: $CANARY_SVC\"\n\nEND=$(($(date +%s) + 60))\nCOUNT=0\nwhile [ \"$(date +%s)\" -lt \"$END\" ]; do\n  curl -sf -o /dev/null \"$SVC/\" 2\u003e/dev/null \u0026\n  curl -sf -o /dev/null \"$CANARY_SVC/\" 2\u003e/dev/null \u0026\n  wait\n  COUNT=$((COUNT + 2))\n  sleep 0.3\ndone\n\necho \"Warmup complete: sent ~$COUNT requests over 60s\"\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/inject-ambient-fault": {
+                "name": "inject-ambient-fault",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "stable-svc"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "SVC=\"{{inputs.parameters.stable-svc}}\"\nDURATION={{workflow.parameters.traffic-duration}}\nFAULT_PCT={{workflow.parameters.fault-percentage}}\n\necho \"=== Injecting errors (ambient mode) ===\"\necho \"Target: $SVC/status/503\"\necho \"Fault rate: ~${FAULT_PCT}% of requests will hit /status/503\"\necho \"Duration: ${DURATION}s\"\n\nCOUNT=0\nERRORS=0\nEND=$(($(date +%s) + DURATION))\n\nwhile [ \"$(date +%s)\" -lt \"$END\" ]; do\n  RAND=$((RANDOM % 100))\n  if [ \"$RAND\" -lt \"$FAULT_PCT\" ]; then\n    curl -s -o /dev/null --max-time 2 \"$SVC/status/503\" 2\u003e/dev/null || true\n    ERRORS=$((ERRORS + 1))\n  else\n    curl -s -o /dev/null --max-time 2 \"$SVC/\" 2\u003e/dev/null || true\n  fi\n  COUNT=$((COUNT + 1))\n\n  if [ $((COUNT % 100)) -eq 0 ]; then\n    PCT=$((ERRORS * 100 / COUNT))\n    echo \"[$(date +%H:%M:%S)] Requests: $COUNT | 503s: $ERRORS (${PCT}%)\"\n  fi\n  sleep 0.05\ndone\n\nPCT=$((ERRORS * 100 / COUNT))\necho \"Ambient fault injection done: $COUNT requests, $ERRORS errors (${PCT}%)\"\n"
+                    ],
+                    "resources": {}
+                },
+                "activeDeadlineSeconds": 300
+            },
+            "namespaced/chaos-experiment/inject-fault-dispatch": {
+                "name": "inject-fault-dispatch",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        },
+                        {
+                            "name": "stable-svc"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "FAULT_PCT={{workflow.parameters.fault-percentage}}\necho \"=== Fault injection via sustained traffic ===\"\necho \"  ${FAULT_PCT}% of stable requests -\u003e /status/503\"\necho \"  Waiting 10s for traffic to start generating errors...\"\nsleep 10\necho \"  Gate open — watch-promotion will begin polling\"\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/inject-istio-fault": {
+                "name": "inject-istio-fault",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\n\necho \"=== Injecting Istio fault (sidecar mode) ===\"\necho \"Target: $NS/virtualservice/{{workflow.parameters.rollout-name}}\"\necho \"Fault:  abort {{workflow.parameters.fault-percentage}}% requests with 503\"\n\nPATCH=\"[{\\\"op\\\":\\\"add\\\",\\\"path\\\":\\\"/spec/http/0/fault\\\",\\\"value\\\":{\\\"abort\\\":{\\\"httpStatus\\\":503,\\\"percentage\\\":{\\\"value\\\":{{workflow.parameters.fault-percentage}}}}}}]\"\n\nRESULT=$(curl -sf -X PATCH \\\n  --cacert $CA \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H \"Content-Type: application/json-patch+json\" \\\n  \"$K8S/apis/networking.istio.io/v1beta1/namespaces/$NS/virtualservices/{{workflow.parameters.rollout-name}}\" \\\n  -d \"$PATCH\" -o /dev/null -w \"%{http_code}\")\n\nif [ \"$RESULT\" = \"200\" ]; then\n  echo \"Fault injection active (HTTP $RESULT)\"\nelse\n  echo \"ERROR: Fault injection failed (HTTP $RESULT)\"\n  exit 1\nfi\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/label-namespace-ambient": {
+                "name": "label-namespace-ambient",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "action"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nACTION=\"{{inputs.parameters.action}}\"\n\nif [ \"$ACTION\" = \"add\" ]; then\n  echo \"Adding ambient mesh label to argo-events namespace\"\n  PATCH='[{\"op\":\"add\",\"path\":\"/metadata/labels/istio.io~1dataplane-mode\",\"value\":\"ambient\"}]'\nelse\n  echo \"Removing ambient mesh label from argo-events namespace\"\n  PATCH='[{\"op\":\"remove\",\"path\":\"/metadata/labels/istio.io~1dataplane-mode\"}]'\nfi\n\nRESULT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n  -X PATCH \"$K8S/api/v1/namespaces/argo-events\" \\\n  -H \"Content-Type: application/json-patch+json\" \\\n  -d \"$PATCH\" -w \"%{http_code}\" -o /dev/null)\n\necho \"Result: HTTP $RESULT\"\nif [ \"$RESULT\" = \"200\" ]; then\n  echo \"Namespace label updated successfully\"\n  # Wait for ztunnel to pick up the change\n  sleep 5\nelse\n  echo \"WARNING: Failed to update namespace label (HTTP $RESULT)\"\nfi\n"
+                    ],
+                    "resources": {}
+                },
+                "retryStrategy": {
+                    "limit": 3,
+                    "retryPolicy": "Always"
+                }
+            },
+            "namespaced/chaos-experiment/promote-rollout-full": {
+                "name": "promote-rollout-full",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "quay.io/argoproj/kubectl-argo-rollouts:v1.8.4",
+                    "command": [
+                        "kubectl-argo-rollouts"
+                    ],
+                    "args": [
+                        "promote",
+                        "{{workflow.parameters.rollout-name}}",
+                        "--full",
+                        "-n",
+                        "{{inputs.parameters.namespace}}"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/record-timestamp": {
+                "name": "record-timestamp",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "label"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "timestamp",
+                            "valueFrom": {
+                                "path": "/tmp/timestamp"
+                            }
+                        }
+                    ]
+                },
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TS=$(date +%s)\necho \"$TS\" \u003e /tmp/timestamp\necho \"{{inputs.parameters.label}}: $TS ($(date -u -d @$TS '+%Y-%m-%dT%H:%M:%SZ' 2\u003e/dev/null || date -u '+%Y-%m-%dT%H:%M:%SZ'))\"\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/resolve-mesh-params": {
+                "name": "resolve-mesh-params",
+                "inputs": {},
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace",
+                            "valueFrom": {
+                                "path": "/tmp/namespace"
+                            }
+                        },
+                        {
+                            "name": "stable-svc",
+                            "valueFrom": {
+                                "path": "/tmp/stable-svc"
+                            }
+                        }
+                    ]
+                },
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "MODE=\"{{workflow.parameters.mesh-mode}}\"\necho \"=== Resolving parameters for mesh-mode: $MODE ===\"\n\nif [ \"$MODE\" = \"sidecar\" ]; then\n  echo \"podinfo\" \u003e /tmp/namespace\n  # Use port 80 (Service port), not 9898 (container targetPort).\n  # Traffic must go through the Service for the sidecar proxy to\n  # correctly attribute destination_service in istio_requests_total.\n  echo \"http://podinfo-stable.podinfo.svc.cluster.local\" \u003e /tmp/stable-svc\nelif [ \"$MODE\" = \"ambient\" ]; then\n  echo \"podinfo-ambient\" \u003e /tmp/namespace\n  # Use port 80 (service port) not 9898 (container port).\n  # Traffic must go through the service for the waypoint proxy to\n  # observe it and generate istio_requests_total metrics.\n  echo \"http://podinfo-stable.podinfo-ambient.svc.cluster.local\" \u003e /tmp/stable-svc\nelse\n  echo \"ERROR: Unknown mesh-mode: $MODE\"\n  exit 1\nfi\n\necho \"Namespace: $(cat /tmp/namespace)\"\necho \"Stable SVC: $(cat /tmp/stable-svc)\"\n"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/set-rollout-image": {
+                "name": "set-rollout-image",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "image"
+                        },
+                        {
+                            "name": "namespace"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "quay.io/argoproj/kubectl-argo-rollouts:v1.8.4",
+                    "command": [
+                        "kubectl-argo-rollouts"
+                    ],
+                    "args": [
+                        "set",
+                        "image",
+                        "{{workflow.parameters.rollout-name}}",
+                        "{{workflow.parameters.rollout-name}}={{inputs.parameters.image}}",
+                        "-n",
+                        "{{inputs.parameters.namespace}}"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/sleep": {
+                "name": "sleep",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "seconds"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "sleep {{inputs.parameters.seconds}}"
+                    ],
+                    "resources": {}
+                }
+            },
+            "namespaced/chaos-experiment/wait-for-promotion": {
+                "name": "wait-for-promotion",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        }
+                    ]
+                },
+                "outputs": {
+                    "parameters": [
+                        {
+                            "name": "t1-pending",
+                            "default": "N/A",
+                            "valueFrom": {
+                                "path": "/tmp/t1_pending"
+                            }
+                        },
+                        {
+                            "name": "t2-firing",
+                            "default": "N/A",
+                            "valueFrom": {
+                                "path": "/tmp/t2_firing"
+                            }
+                        }
+                    ]
+                },
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\nPROM=\"{{workflow.parameters.prometheus-url}}\"\nMODE=\"{{workflow.parameters.mesh-mode}}\"\n\n# Alert name pattern per mesh mode\nif [ \"$MODE\" = \"sidecar\" ]; then\n  ALERT_PATTERN=\"PodInfoStable.*\"\nelse\n  ALERT_PATTERN=\"PodInfoAmbient.*\"\nfi\n\n# Initialize T1/T2 tracking files\necho \"N/A\" \u003e /tmp/t1_pending\necho \"N/A\" \u003e /tmp/t2_firing\nT1_CAPTURED=false\nT2_CAPTURED=false\n\necho \"=== Watching for automatic promotion (max 10 minutes) ===\"\necho \"Pipeline: PrometheusRule -\u003e Alertmanager -\u003e Argo Events -\u003e Failover Workflow -\u003e Promote\"\necho \"Alert pattern: $ALERT_PATTERN\"\necho \"\"\n\ni=0\nPREV_PHASE=\"\"\nwhile [ $i -lt 60 ]; do\n  ROLLOUT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n    \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}\")\n\n  COMPACT=$(echo \"$ROLLOUT\" | tr -d '\\n' | tr -s ' ')\n  PHASE=$(echo \"$COMPACT\" | grep -oE '\"phase\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\n  PHASE=\"${PHASE:-?}\"\n  STEP=$(echo \"$COMPACT\" | grep -oE '\"currentStepIndex\": *[0-9]+' | head -1 | grep -oE '[0-9]+')\n  STEP=\"${STEP:-?}\"\n  ABORT=$(echo \"$COMPACT\" | grep -oE '\"abort\": *(true|false)' | head -1 | grep -oE 'true\\|false')\n  ABORT=\"${ABORT:-false}\"\n  MSG=$(echo \"$COMPACT\" | grep -oE '\"message\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\n  MSG=\"${MSG:-}\"\n\n  # ── T1/T2 capture: query Prometheus for alert state ──\n  if [ \"$T1_CAPTURED\" = false ]; then\n    FOR_DATA=$(curl -sf \"$PROM/api/v1/query\" \\\n      --data-urlencode \"query=ALERTS_FOR_STATE{alertname=~\\\"${ALERT_PATTERN}\\\"}\" 2\u003e/dev/null || echo \"\")\n    FOR_VAL=$(echo \"$FOR_DATA\" | grep -oE '\"value\":\\[[^,]+,\"[^\"]*\"' | cut -d'\"' -f4 | grep -oE '^[0-9]+' | head -1)\n    if [ -n \"$FOR_VAL\" ] \u0026\u0026 [ \"$FOR_VAL\" != \"\" ]; then\n      echo \"$FOR_VAL\" \u003e /tmp/t1_pending\n      T1_CAPTURED=true\n      echo \"  \u003e\u003e T1 CAPTURED: alert pending since $FOR_VAL\"\n    fi\n  fi\n\n  if [ \"$T2_CAPTURED\" = false ]; then\n    ALERT_DATA=$(curl -sf \"$PROM/api/v1/query\" \\\n      --data-urlencode \"query=ALERTS{alertname=~\\\"${ALERT_PATTERN}\\\",alertstate=\\\"firing\\\"}\" 2\u003e/dev/null || echo \"\")\n    ALERT_TS=$(echo \"$ALERT_DATA\" | grep -oE '\"value\":\\[[0-9.]+' | grep -oE '[0-9.]+$' | head -1 | cut -d. -f1)\n    if [ -n \"$ALERT_TS\" ] \u0026\u0026 [ \"$ALERT_TS\" != \"\" ]; then\n      echo \"$ALERT_TS\" \u003e /tmp/t2_firing\n      T2_CAPTURED=true\n      echo \"  \u003e\u003e T2 CAPTURED: alert firing at $ALERT_TS\"\n    fi\n  fi\n\n  [ \"$PHASE\" != \"$PREV_PHASE\" ] \u0026\u0026 echo \"--- Phase change: $PREV_PHASE -\u003e $PHASE ---\"\n  echo \"[$(date +%H:%M:%S)] Phase: $PHASE | Step: $STEP | Abort: $ABORT | T1:$(cat /tmp/t1_pending) T2:$(cat /tmp/t2_firing)${MSG:+ | $MSG}\"\n  PREV_PHASE=$PHASE\n\n  if [ \"$PHASE\" = \"Healthy\" ]; then\n    echo \"\"\n    echo \"SUCCESS: Canary promoted to 100%!\"\n    date +%s \u003e /tmp/t5_promotion_complete\n    exit 0\n  fi\n\n  if [ \"$PHASE\" = \"Degraded\" ] || [ \"$ABORT\" = \"true\" ]; then\n    echo \"\"\n    echo \"REMEDIATED: Canary was correctly rejected (phase=$PHASE, abort=$ABORT)\"\n    echo \"  Message: $MSG\"\n    date +%s \u003e /tmp/t5_remediation_complete\n    exit 0\n  fi\n\n  i=$((i + 1))\n  sleep 10\ndone\n\necho \"\"\necho \"TIMEOUT: Rollout was not promoted within 10 minutes\"\nexit 1\n"
+                    ],
+                    "resources": {}
+                },
+                "activeDeadlineSeconds": 600
+            },
+            "namespaced/chaos-experiment/wait-for-weight": {
+                "name": "wait-for-weight",
+                "inputs": {
+                    "parameters": [
+                        {
+                            "name": "namespace"
+                        },
+                        {
+                            "name": "timeout"
+                        }
+                    ]
+                },
+                "outputs": {},
+                "metadata": {},
+                "container": {
+                    "name": "",
+                    "image": "curlimages/curl:8.11.1",
+                    "command": [
+                        "sh",
+                        "-c"
+                    ],
+                    "args": [
+                        "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\nTIMEOUT={{inputs.parameters.timeout}}\n\necho \"=== Waiting for canary to receive traffic weight \u003e 0 ===\"\n\ni=0\nwhile [ $i -lt $TIMEOUT ]; do\n  ROLLOUT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n    \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}\")\n  CURL_EXIT=$?\n\n  if [ $CURL_EXIT -ne 0 ]; then\n    echo \"[$(date +%H:%M:%S)] curl failed (exit=$CURL_EXIT)\"\n  elif echo \"$ROLLOUT\" | grep -q '\"kind\":\"Status\"'; then\n    echo \"[$(date +%H:%M:%S)] API error\"\n  else\n    # Compact JSON to single line (K8s API returns pretty-printed multi-line)\n    COMPACT=$(echo \"$ROLLOUT\" | tr -d '\\n' | tr -s ' ')\n\n    # Parse phase and step from compact JSON\n    PHASE=$(echo \"$COMPACT\" | grep -oE '\"phase\": *\"[^\"]*\"' | head -1 | grep -oE '\"[A-Z][a-z]*\"' | tr -d '\"')\n    STEP=$(echo \"$COMPACT\" | grep -oE '\"currentStepIndex\": *[0-9]+' | head -1 | grep -oE '[0-9]+')\n    PHASE=\"${PHASE:-unknown}\"\n    STEP=\"${STEP:-0}\"\n\n    echo \"[$(date +%H:%M:%S)] Phase: $PHASE, Step: $STEP\"\n\n    # Canary is active when phase is Progressing/Paused and step \u003e= 1\n    if [ \"$STEP\" -ge 1 ] \u0026\u0026 [ \"$PHASE\" != \"Degraded\" ] \u0026\u0026 [ \"$PHASE\" != \"Healthy\" ] \u0026\u0026 [ \"$PHASE\" != \"unknown\" ]; then\n      echo \"Canary is active (phase=$PHASE, step=$STEP)\"\n      exit 0\n    fi\n\n    if [ \"$PHASE\" = \"Degraded\" ]; then\n      echo \"ERROR: Rollout degraded — analysis aborted the canary\"\n      exit 1\n    fi\n  fi\n\n  i=$((i + 5))\n  sleep 5\ndone\n\necho \"TIMEOUT: Canary never received traffic weight within ${TIMEOUT}s\"\nexit 1\n"
+                    ],
+                    "resources": {}
+                },
+                "activeDeadlineSeconds": 360
+            }
+        },
+        "conditions": [
+            {
+                "type": "PodRunning",
+                "status": "False"
+            },
+            {
+                "type": "Completed",
+                "status": "True"
+            }
+        ],
+        "resourcesDuration": {
+            "cpu": 132,
+            "memory": 1365
+        },
+        "storedWorkflowTemplateSpec": {
+            "templates": [
+                {
+                    "name": "chaos-pipeline",
+                    "inputs": {},
+                    "outputs": {},
+                    "metadata": {},
+                    "steps": [
+                        [
+                            {
+                                "name": "resolve-params",
+                                "template": "resolve-mesh-params",
+                                "arguments": {}
+                            }
+                        ],
+                        [
+                            {
+                                "name": "abort-any-canary",
+                                "template": "abort-rollout",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        }
+                                    ]
+                                },
+                                "continueOn": {
+                                    "failed": true
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "reset-to-stable",
+                                "template": "set-rollout-image",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "image",
+                                            "value": "{{workflow.parameters.stable-image}}"
+                                        },
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        }
+                                    ]
+                                },
+                                "continueOn": {
+                                    "failed": true
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "promote-reset",
+                                "template": "promote-rollout-full",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        }
+                                    ]
+                                },
+                                "continueOn": {
+                                    "failed": true
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "wait-for-reconcile",
+                                "template": "sleep",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "seconds",
+                                            "value": "20"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "disable-analysis",
+                                "template": "disable-analysis-templates",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "trigger-canary",
+                                "template": "set-rollout-image",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "image",
+                                            "value": "{{workflow.parameters.canary-image}}"
+                                        },
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "enroll-in-mesh",
+                                "template": "label-namespace-ambient",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "action",
+                                            "value": "add"
+                                        }
+                                    ]
+                                },
+                                "when": "{{workflow.parameters.mesh-mode}} == ambient"
+                            }
+                        ],
+                        [
+                            {
+                                "name": "warmup-traffic",
+                                "template": "generate-warmup-traffic",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "stable-svc",
+                                            "value": "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "wait-for-canary-weight",
+                                "template": "wait-for-weight",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        },
+                                        {
+                                            "name": "timeout",
+                                            "value": "300"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "record-t0",
+                                "template": "record-timestamp",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "label",
+                                            "value": "T0_FAULT_INJECTED"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "fault-traffic-and-watch",
+                                "template": "fault-traffic-watch-dag",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        },
+                                        {
+                                            "name": "stable-svc",
+                                            "value": "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        [
+                            {
+                                "name": "collect-results",
+                                "template": "collect-timing-report",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{steps.resolve-params.outputs.parameters.namespace}}"
+                                        },
+                                        {
+                                            "name": "t0",
+                                            "value": "{{steps.record-t0.outputs.parameters.timestamp}}"
+                                        },
+                                        {
+                                            "name": "stable-svc",
+                                            "value": "{{steps.resolve-params.outputs.parameters.stable-svc}}"
+                                        },
+                                        {
+                                            "name": "t1",
+                                            "value": "{{steps.fault-traffic-and-watch.outputs.parameters.t1-pending}}"
+                                        },
+                                        {
+                                            "name": "t2",
+                                            "value": "{{steps.fault-traffic-and-watch.outputs.parameters.t2-firing}}"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "name": "resolve-mesh-params",
+                    "inputs": {},
+                    "outputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace",
+                                "valueFrom": {
+                                    "path": "/tmp/namespace"
+                                }
+                            },
+                            {
+                                "name": "stable-svc",
+                                "valueFrom": {
+                                    "path": "/tmp/stable-svc"
+                                }
+                            }
+                        ]
+                    },
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "MODE=\"{{workflow.parameters.mesh-mode}}\"\necho \"=== Resolving parameters for mesh-mode: $MODE ===\"\n\nif [ \"$MODE\" = \"sidecar\" ]; then\n  echo \"podinfo\" \u003e /tmp/namespace\n  # Use port 80 (Service port), not 9898 (container targetPort).\n  # Traffic must go through the Service for the sidecar proxy to\n  # correctly attribute destination_service in istio_requests_total.\n  echo \"http://podinfo-stable.podinfo.svc.cluster.local\" \u003e /tmp/stable-svc\nelif [ \"$MODE\" = \"ambient\" ]; then\n  echo \"podinfo-ambient\" \u003e /tmp/namespace\n  # Use port 80 (service port) not 9898 (container port).\n  # Traffic must go through the service for the waypoint proxy to\n  # observe it and generate istio_requests_total metrics.\n  echo \"http://podinfo-stable.podinfo-ambient.svc.cluster.local\" \u003e /tmp/stable-svc\nelse\n  echo \"ERROR: Unknown mesh-mode: $MODE\"\n  exit 1\nfi\n\necho \"Namespace: $(cat /tmp/namespace)\"\necho \"Stable SVC: $(cat /tmp/stable-svc)\"\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "label-namespace-ambient",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "action"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nACTION=\"{{inputs.parameters.action}}\"\n\nif [ \"$ACTION\" = \"add\" ]; then\n  echo \"Adding ambient mesh label to argo-events namespace\"\n  PATCH='[{\"op\":\"add\",\"path\":\"/metadata/labels/istio.io~1dataplane-mode\",\"value\":\"ambient\"}]'\nelse\n  echo \"Removing ambient mesh label from argo-events namespace\"\n  PATCH='[{\"op\":\"remove\",\"path\":\"/metadata/labels/istio.io~1dataplane-mode\"}]'\nfi\n\nRESULT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n  -X PATCH \"$K8S/api/v1/namespaces/argo-events\" \\\n  -H \"Content-Type: application/json-patch+json\" \\\n  -d \"$PATCH\" -w \"%{http_code}\" -o /dev/null)\n\necho \"Result: HTTP $RESULT\"\nif [ \"$RESULT\" = \"200\" ]; then\n  echo \"Namespace label updated successfully\"\n  # Wait for ztunnel to pick up the change\n  sleep 5\nelse\n  echo \"WARNING: Failed to update namespace label (HTTP $RESULT)\"\nfi\n"
+                        ],
+                        "resources": {}
+                    },
+                    "retryStrategy": {
+                        "limit": 3,
+                        "retryPolicy": "Always"
+                    }
+                },
+                {
+                    "name": "generate-warmup-traffic",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "stable-svc"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "SVC=\"{{inputs.parameters.stable-svc}}\"\n# Derive canary URL from stable URL\nCANARY_SVC=$(echo \"$SVC\" | sed 's/podinfo-stable/podinfo-canary/')\n\necho \"=== Generating warmup traffic for 60s ===\"\necho \"  Stable: $SVC\"\necho \"  Canary: $CANARY_SVC\"\n\nEND=$(($(date +%s) + 60))\nCOUNT=0\nwhile [ \"$(date +%s)\" -lt \"$END\" ]; do\n  curl -sf -o /dev/null \"$SVC/\" 2\u003e/dev/null \u0026\n  curl -sf -o /dev/null \"$CANARY_SVC/\" 2\u003e/dev/null \u0026\n  wait\n  COUNT=$((COUNT + 2))\n  sleep 0.3\ndone\n\necho \"Warmup complete: sent ~$COUNT requests over 60s\"\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "record-timestamp",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "label"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "parameters": [
+                            {
+                                "name": "timestamp",
+                                "valueFrom": {
+                                    "path": "/tmp/timestamp"
+                                }
+                            }
+                        ]
+                    },
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TS=$(date +%s)\necho \"$TS\" \u003e /tmp/timestamp\necho \"{{inputs.parameters.label}}: $TS ($(date -u -d @$TS '+%Y-%m-%dT%H:%M:%SZ' 2\u003e/dev/null || date -u '+%Y-%m-%dT%H:%M:%SZ'))\"\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "abort-rollout",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "quay.io/argoproj/kubectl-argo-rollouts:v1.8.4",
+                        "command": [
+                            "kubectl-argo-rollouts"
+                        ],
+                        "args": [
+                            "abort",
+                            "{{workflow.parameters.rollout-name}}",
+                            "-n",
+                            "{{inputs.parameters.namespace}}"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "set-rollout-image",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "image"
+                            },
+                            {
+                                "name": "namespace"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "quay.io/argoproj/kubectl-argo-rollouts:v1.8.4",
+                        "command": [
+                            "kubectl-argo-rollouts"
+                        ],
+                        "args": [
+                            "set",
+                            "image",
+                            "{{workflow.parameters.rollout-name}}",
+                            "{{workflow.parameters.rollout-name}}={{inputs.parameters.image}}",
+                            "-n",
+                            "{{inputs.parameters.namespace}}"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "promote-rollout-full",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "quay.io/argoproj/kubectl-argo-rollouts:v1.8.4",
+                        "command": [
+                            "kubectl-argo-rollouts"
+                        ],
+                        "args": [
+                            "promote",
+                            "{{workflow.parameters.rollout-name}}",
+                            "--full",
+                            "-n",
+                            "{{inputs.parameters.namespace}}"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "disable-analysis-templates",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\nROLLOUT_NAME=\"{{workflow.parameters.rollout-name}}\"\n\necho \"=== Disabling AnalysisTemplate steps for experiment ===\"\n\n# Replace canary steps: keep setWeight + pause, remove analysis.\n# Pauses must be \u003e= 2m so alerts (for: 1m) have time to fire\n# during canary progression before it reaches 100%.\nPATCH='{\n  \"spec\": {\n    \"strategy\": {\n      \"canary\": {\n        \"steps\": [\n          {\"setWeight\": 10},\n          {\"pause\": {\"duration\": \"2m\"}},\n          {\"setWeight\": 30},\n          {\"pause\": {\"duration\": \"2m\"}},\n          {\"setWeight\": 50},\n          {\"pause\": {\"duration\": \"2m\"}},\n          {\"setWeight\": 100}\n        ]\n      }\n    }\n  }\n}'\n\nRESULT=$(curl -sf -X PATCH \\\n  --cacert $CA \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H \"Content-Type: application/merge-patch+json\" \\\n  \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/$ROLLOUT_NAME\" \\\n  -d \"$PATCH\" -o /dev/null -w \"%{http_code}\")\n\nif [ \"$RESULT\" = \"200\" ]; then\n  echo \"Analysis steps removed successfully\"\n  echo \"Steps: setWeight(10)-\u003epause(2m)-\u003esetWeight(30)-\u003epause(2m)-\u003esetWeight(50)-\u003epause(2m)-\u003esetWeight(100)\"\nelse\n  echo \"WARNING: Failed to patch rollout (HTTP $RESULT)\"\n  echo \"AnalysisTemplate may race with event-driven pipeline\"\nfi\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "sleep",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "seconds"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "sleep {{inputs.parameters.seconds}}"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "wait-for-weight",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            },
+                            {
+                                "name": "timeout"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\nTIMEOUT={{inputs.parameters.timeout}}\n\necho \"=== Waiting for canary to receive traffic weight \u003e 0 ===\"\n\ni=0\nwhile [ $i -lt $TIMEOUT ]; do\n  ROLLOUT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n    \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}\")\n  CURL_EXIT=$?\n\n  if [ $CURL_EXIT -ne 0 ]; then\n    echo \"[$(date +%H:%M:%S)] curl failed (exit=$CURL_EXIT)\"\n  elif echo \"$ROLLOUT\" | grep -q '\"kind\":\"Status\"'; then\n    echo \"[$(date +%H:%M:%S)] API error\"\n  else\n    # Compact JSON to single line (K8s API returns pretty-printed multi-line)\n    COMPACT=$(echo \"$ROLLOUT\" | tr -d '\\n' | tr -s ' ')\n\n    # Parse phase and step from compact JSON\n    PHASE=$(echo \"$COMPACT\" | grep -oE '\"phase\": *\"[^\"]*\"' | head -1 | grep -oE '\"[A-Z][a-z]*\"' | tr -d '\"')\n    STEP=$(echo \"$COMPACT\" | grep -oE '\"currentStepIndex\": *[0-9]+' | head -1 | grep -oE '[0-9]+')\n    PHASE=\"${PHASE:-unknown}\"\n    STEP=\"${STEP:-0}\"\n\n    echo \"[$(date +%H:%M:%S)] Phase: $PHASE, Step: $STEP\"\n\n    # Canary is active when phase is Progressing/Paused and step \u003e= 1\n    if [ \"$STEP\" -ge 1 ] \u0026\u0026 [ \"$PHASE\" != \"Degraded\" ] \u0026\u0026 [ \"$PHASE\" != \"Healthy\" ] \u0026\u0026 [ \"$PHASE\" != \"unknown\" ]; then\n      echo \"Canary is active (phase=$PHASE, step=$STEP)\"\n      exit 0\n    fi\n\n    if [ \"$PHASE\" = \"Degraded\" ]; then\n      echo \"ERROR: Rollout degraded — analysis aborted the canary\"\n      exit 1\n    fi\n  fi\n\n  i=$((i + 5))\n  sleep 5\ndone\n\necho \"TIMEOUT: Canary never received traffic weight within ${TIMEOUT}s\"\nexit 1\n"
+                        ],
+                        "resources": {}
+                    },
+                    "activeDeadlineSeconds": 360
+                },
+                {
+                    "name": "fault-traffic-watch-dag",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            },
+                            {
+                                "name": "stable-svc"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "parameters": [
+                            {
+                                "name": "t1-pending",
+                                "valueFrom": {
+                                    "parameter": "{{tasks.watch-promotion.outputs.parameters.t1-pending}}"
+                                }
+                            },
+                            {
+                                "name": "t2-firing",
+                                "valueFrom": {
+                                    "parameter": "{{tasks.watch-promotion.outputs.parameters.t2-firing}}"
+                                }
+                            }
+                        ]
+                    },
+                    "metadata": {},
+                    "dag": {
+                        "tasks": [
+                            {
+                                "name": "inject-fault",
+                                "template": "inject-fault-dispatch",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{inputs.parameters.namespace}}"
+                                        },
+                                        {
+                                            "name": "stable-svc",
+                                            "value": "{{inputs.parameters.stable-svc}}"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "sustained-traffic",
+                                "template": "generate-sustained-traffic",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "stable-svc",
+                                            "value": "{{inputs.parameters.stable-svc}}"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "watch-promotion",
+                                "template": "wait-for-promotion",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "namespace",
+                                            "value": "{{inputs.parameters.namespace}}"
+                                        }
+                                    ]
+                                },
+                                "dependencies": [
+                                    "inject-fault"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "inject-fault-dispatch",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            },
+                            {
+                                "name": "stable-svc"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "FAULT_PCT={{workflow.parameters.fault-percentage}}\necho \"=== Fault injection via sustained traffic ===\"\necho \"  ${FAULT_PCT}% of stable requests -\u003e /status/503\"\necho \"  Waiting 10s for traffic to start generating errors...\"\nsleep 10\necho \"  Gate open — watch-promotion will begin polling\"\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "inject-istio-fault",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\n\necho \"=== Injecting Istio fault (sidecar mode) ===\"\necho \"Target: $NS/virtualservice/{{workflow.parameters.rollout-name}}\"\necho \"Fault:  abort {{workflow.parameters.fault-percentage}}% requests with 503\"\n\nPATCH=\"[{\\\"op\\\":\\\"add\\\",\\\"path\\\":\\\"/spec/http/0/fault\\\",\\\"value\\\":{\\\"abort\\\":{\\\"httpStatus\\\":503,\\\"percentage\\\":{\\\"value\\\":{{workflow.parameters.fault-percentage}}}}}}]\"\n\nRESULT=$(curl -sf -X PATCH \\\n  --cacert $CA \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -H \"Content-Type: application/json-patch+json\" \\\n  \"$K8S/apis/networking.istio.io/v1beta1/namespaces/$NS/virtualservices/{{workflow.parameters.rollout-name}}\" \\\n  -d \"$PATCH\" -o /dev/null -w \"%{http_code}\")\n\nif [ \"$RESULT\" = \"200\" ]; then\n  echo \"Fault injection active (HTTP $RESULT)\"\nelse\n  echo \"ERROR: Fault injection failed (HTTP $RESULT)\"\n  exit 1\nfi\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "inject-ambient-fault",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "stable-svc"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "SVC=\"{{inputs.parameters.stable-svc}}\"\nDURATION={{workflow.parameters.traffic-duration}}\nFAULT_PCT={{workflow.parameters.fault-percentage}}\n\necho \"=== Injecting errors (ambient mode) ===\"\necho \"Target: $SVC/status/503\"\necho \"Fault rate: ~${FAULT_PCT}% of requests will hit /status/503\"\necho \"Duration: ${DURATION}s\"\n\nCOUNT=0\nERRORS=0\nEND=$(($(date +%s) + DURATION))\n\nwhile [ \"$(date +%s)\" -lt \"$END\" ]; do\n  RAND=$((RANDOM % 100))\n  if [ \"$RAND\" -lt \"$FAULT_PCT\" ]; then\n    curl -s -o /dev/null --max-time 2 \"$SVC/status/503\" 2\u003e/dev/null || true\n    ERRORS=$((ERRORS + 1))\n  else\n    curl -s -o /dev/null --max-time 2 \"$SVC/\" 2\u003e/dev/null || true\n  fi\n  COUNT=$((COUNT + 1))\n\n  if [ $((COUNT % 100)) -eq 0 ]; then\n    PCT=$((ERRORS * 100 / COUNT))\n    echo \"[$(date +%H:%M:%S)] Requests: $COUNT | 503s: $ERRORS (${PCT}%)\"\n  fi\n  sleep 0.05\ndone\n\nPCT=$((ERRORS * 100 / COUNT))\necho \"Ambient fault injection done: $COUNT requests, $ERRORS errors (${PCT}%)\"\n"
+                        ],
+                        "resources": {}
+                    },
+                    "activeDeadlineSeconds": 300
+                },
+                {
+                    "name": "generate-traffic",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "stable-svc"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "SVC=\"{{inputs.parameters.stable-svc}}\"\nDURATION={{workflow.parameters.traffic-duration}}\n\necho \"=== Traffic generation (${DURATION}s, ~20 req/s) ===\"\necho \"Target: $SVC\"\n\nCOUNT=0\nERRORS=0\nEND=$(($(date +%s) + DURATION))\n\nwhile [ $(date +%s) -lt $END ]; do\n  STATUS=$(curl -s -o /dev/null -w \"%{http_code}\" --max-time 2 \"$SVC/\" 2\u003e/dev/null || echo \"000\")\n  COUNT=$((COUNT + 1))\n  [ \"$STATUS\" = \"503\" ] || [ \"$STATUS\" = \"500\" ] \u0026\u0026 ERRORS=$((ERRORS + 1))\n\n  if [ $((COUNT % 200)) -eq 0 ]; then\n    PCT=$(( ERRORS * 100 / COUNT ))\n    echo \"[$(date +%H:%M:%S)] Requests: $COUNT | 5xx: $ERRORS (${PCT}%)\"\n  fi\n  sleep 0.05\ndone\n\nPCT=$(( ERRORS * 100 / COUNT ))\necho \"Traffic done — $COUNT requests, $ERRORS errors (${PCT}%)\"\n"
+                        ],
+                        "resources": {}
+                    },
+                    "activeDeadlineSeconds": 300
+                },
+                {
+                    "name": "generate-sustained-traffic",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "stable-svc"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "SVC=\"{{inputs.parameters.stable-svc}}\"\nCANARY_SVC=$(echo \"$SVC\" | sed 's/podinfo-stable/podinfo-canary/')\nFAULT_PCT={{workflow.parameters.fault-percentage}}\nTOTAL=$(({{workflow.parameters.traffic-duration}} + 300))\n\necho \"=== Sustained traffic (${TOTAL}s, ~10 req/s) ===\"\necho \"  Stable: $SVC\"\necho \"  Canary: $CANARY_SVC\"\necho \"  Fault %: ${FAULT_PCT}% of stable requests → /status/503\"\n\nCOUNT=0\nERRORS=0\nEND=$(($(date +%s) + TOTAL))\n\nwhile [ \"$(date +%s)\" -lt \"$END\" ]; do\n  # Stable traffic: FAULT_PCT% hit /status/503, rest hit /\n  RAND=$((RANDOM % 100))\n  if [ \"$RAND\" -lt \"$FAULT_PCT\" ]; then\n    curl -s -o /dev/null --max-time 2 \"$SVC/status/503\" 2\u003e/dev/null \u0026\n    ERRORS=$((ERRORS + 1))\n  else\n    curl -s -o /dev/null --max-time 2 \"$SVC/\" 2\u003e/dev/null \u0026\n  fi\n  # Canary traffic: always healthy\n  curl -s -o /dev/null --max-time 2 \"$CANARY_SVC/\" 2\u003e/dev/null \u0026\n  wait\n  COUNT=$((COUNT + 2))\n  [ $((COUNT % 200)) -eq 0 ] \u0026\u0026 echo \"[$(date +%H:%M:%S)] Traffic: $COUNT (503s: $ERRORS)\"\n  sleep 0.2\ndone\n\nPCT=0\n[ \"$COUNT\" -gt 0 ] \u0026\u0026 PCT=$((ERRORS * 100 / COUNT))\necho \"Sustained traffic done — $COUNT requests, $ERRORS errors (${PCT}%)\"\n"
+                        ],
+                        "resources": {}
+                    },
+                    "activeDeadlineSeconds": 600
+                },
+                {
+                    "name": "wait-for-promotion",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            }
+                        ]
+                    },
+                    "outputs": {
+                        "parameters": [
+                            {
+                                "name": "t1-pending",
+                                "default": "N/A",
+                                "valueFrom": {
+                                    "path": "/tmp/t1_pending"
+                                }
+                            },
+                            {
+                                "name": "t2-firing",
+                                "default": "N/A",
+                                "valueFrom": {
+                                    "path": "/tmp/t2_firing"
+                                }
+                            }
+                        ]
+                    },
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nNS=\"{{inputs.parameters.namespace}}\"\nPROM=\"{{workflow.parameters.prometheus-url}}\"\nMODE=\"{{workflow.parameters.mesh-mode}}\"\n\n# Alert name pattern per mesh mode\nif [ \"$MODE\" = \"sidecar\" ]; then\n  ALERT_PATTERN=\"PodInfoStable.*\"\nelse\n  ALERT_PATTERN=\"PodInfoAmbient.*\"\nfi\n\n# Initialize T1/T2 tracking files\necho \"N/A\" \u003e /tmp/t1_pending\necho \"N/A\" \u003e /tmp/t2_firing\nT1_CAPTURED=false\nT2_CAPTURED=false\n\necho \"=== Watching for automatic promotion (max 10 minutes) ===\"\necho \"Pipeline: PrometheusRule -\u003e Alertmanager -\u003e Argo Events -\u003e Failover Workflow -\u003e Promote\"\necho \"Alert pattern: $ALERT_PATTERN\"\necho \"\"\n\ni=0\nPREV_PHASE=\"\"\nwhile [ $i -lt 60 ]; do\n  ROLLOUT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n    \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}\")\n\n  COMPACT=$(echo \"$ROLLOUT\" | tr -d '\\n' | tr -s ' ')\n  PHASE=$(echo \"$COMPACT\" | grep -oE '\"phase\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\n  PHASE=\"${PHASE:-?}\"\n  STEP=$(echo \"$COMPACT\" | grep -oE '\"currentStepIndex\": *[0-9]+' | head -1 | grep -oE '[0-9]+')\n  STEP=\"${STEP:-?}\"\n  ABORT=$(echo \"$COMPACT\" | grep -oE '\"abort\": *(true|false)' | head -1 | grep -oE 'true\\|false')\n  ABORT=\"${ABORT:-false}\"\n  MSG=$(echo \"$COMPACT\" | grep -oE '\"message\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\n  MSG=\"${MSG:-}\"\n\n  # ── T1/T2 capture: query Prometheus for alert state ──\n  if [ \"$T1_CAPTURED\" = false ]; then\n    FOR_DATA=$(curl -sf \"$PROM/api/v1/query\" \\\n      --data-urlencode \"query=ALERTS_FOR_STATE{alertname=~\\\"${ALERT_PATTERN}\\\"}\" 2\u003e/dev/null || echo \"\")\n    FOR_VAL=$(echo \"$FOR_DATA\" | grep -oE '\"value\":\\[[^,]+,\"[^\"]*\"' | cut -d'\"' -f4 | grep -oE '^[0-9]+' | head -1)\n    if [ -n \"$FOR_VAL\" ] \u0026\u0026 [ \"$FOR_VAL\" != \"\" ]; then\n      echo \"$FOR_VAL\" \u003e /tmp/t1_pending\n      T1_CAPTURED=true\n      echo \"  \u003e\u003e T1 CAPTURED: alert pending since $FOR_VAL\"\n    fi\n  fi\n\n  if [ \"$T2_CAPTURED\" = false ]; then\n    ALERT_DATA=$(curl -sf \"$PROM/api/v1/query\" \\\n      --data-urlencode \"query=ALERTS{alertname=~\\\"${ALERT_PATTERN}\\\",alertstate=\\\"firing\\\"}\" 2\u003e/dev/null || echo \"\")\n    ALERT_TS=$(echo \"$ALERT_DATA\" | grep -oE '\"value\":\\[[0-9.]+' | grep -oE '[0-9.]+$' | head -1 | cut -d. -f1)\n    if [ -n \"$ALERT_TS\" ] \u0026\u0026 [ \"$ALERT_TS\" != \"\" ]; then\n      echo \"$ALERT_TS\" \u003e /tmp/t2_firing\n      T2_CAPTURED=true\n      echo \"  \u003e\u003e T2 CAPTURED: alert firing at $ALERT_TS\"\n    fi\n  fi\n\n  [ \"$PHASE\" != \"$PREV_PHASE\" ] \u0026\u0026 echo \"--- Phase change: $PREV_PHASE -\u003e $PHASE ---\"\n  echo \"[$(date +%H:%M:%S)] Phase: $PHASE | Step: $STEP | Abort: $ABORT | T1:$(cat /tmp/t1_pending) T2:$(cat /tmp/t2_firing)${MSG:+ | $MSG}\"\n  PREV_PHASE=$PHASE\n\n  if [ \"$PHASE\" = \"Healthy\" ]; then\n    echo \"\"\n    echo \"SUCCESS: Canary promoted to 100%!\"\n    date +%s \u003e /tmp/t5_promotion_complete\n    exit 0\n  fi\n\n  if [ \"$PHASE\" = \"Degraded\" ] || [ \"$ABORT\" = \"true\" ]; then\n    echo \"\"\n    echo \"REMEDIATED: Canary was correctly rejected (phase=$PHASE, abort=$ABORT)\"\n    echo \"  Message: $MSG\"\n    date +%s \u003e /tmp/t5_remediation_complete\n    exit 0\n  fi\n\n  i=$((i + 1))\n  sleep 10\ndone\n\necho \"\"\necho \"TIMEOUT: Rollout was not promoted within 10 minutes\"\nexit 1\n"
+                        ],
+                        "resources": {}
+                    },
+                    "activeDeadlineSeconds": 600
+                },
+                {
+                    "name": "collect-timing-report",
+                    "inputs": {
+                        "parameters": [
+                            {
+                                "name": "namespace"
+                            },
+                            {
+                                "name": "t0"
+                            },
+                            {
+                                "name": "stable-svc"
+                            },
+                            {
+                                "name": "t1"
+                            },
+                            {
+                                "name": "t2"
+                            }
+                        ]
+                    },
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nPROM=\"{{workflow.parameters.prometheus-url}}\"\nNS=\"{{inputs.parameters.namespace}}\"\nMODE=\"{{workflow.parameters.mesh-mode}}\"\nT0={{inputs.parameters.t0}}\n\necho \"============================================================\"\necho \"  CHAOS EXPERIMENT RESULTS — $(date -u '+%Y-%m-%dT%H:%M:%SZ')\"\necho \"============================================================\"\necho \"\"\necho \"Configuration:\"\necho \"  Mesh Mode:       $MODE\"\necho \"  Namespace:       $NS\"\necho \"  Stable Image:    {{workflow.parameters.stable-image}}\"\necho \"  Canary Image:    {{workflow.parameters.canary-image}}\"\necho \"  Fault Percent:   {{workflow.parameters.fault-percentage}}%\"\necho \"  Traffic Duration: {{workflow.parameters.traffic-duration}}s\"\necho \"\"\n\n# T0: fault injection start (passed from earlier step)\necho \"=== Timing Data (T0-T5) ===\"\n\n# T1/T2: captured live in the watch-promotion polling loop\nT1_PENDING=\"{{inputs.parameters.t1}}\"\nT2_ALERT=\"{{inputs.parameters.t2}}\"\n\nif [ \"$MODE\" = \"sidecar\" ]; then\n  STABLE_LABEL=\"destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",reporter=\\\"destination\\\"\"\nelse\n  STABLE_LABEL=\"destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\"\"\nfi\n\n# T4: check if a failover workflow ran (query K8s API for recent workflows)\n# Use labelSelector if labels exist, fall back to name grep\nFAILOVER_PREFIX=\"podinfo-failover-${MODE}\"\nWORKFLOWS=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n  \"$K8S/apis/argoproj.io/v1alpha1/namespaces/argo-events/workflows?labelSelector=triggered-by=prometheus-alert,failover-mode=${MODE}\" \\\n  || echo \"{}\")\n# Extract latest failover workflow name\n# K8s API JSON uses \"name\": \"value\" with space after colon\nT4_NAME=$(echo \"$WORKFLOWS\" | tr '\\n' ' ' | grep -oE '\"name\": *\"'\"${FAILOVER_PREFIX}\"'-[^\".]*\"' | sed 's/.*\"name\": *\"\\([^\"]*\\)\"/\\1/' | tail -1)\n# Fallback: if label selector returned nothing, try without labels\nif [ -z \"$T4_NAME\" ]; then\n  WORKFLOWS_ALL=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n    \"$K8S/apis/argoproj.io/v1alpha1/namespaces/argo-events/workflows\" || echo \"{}\")\n  T4_NAME=$(echo \"$WORKFLOWS_ALL\" | tr '\\n' ' ' | grep -oE '\"name\": *\"'\"${FAILOVER_PREFIX}\"'-[^\".]*\"' | sed 's/.*\"name\": *\"\\([^\"]*\\)\"/\\1/' | tail -1)\nfi\nif [ -n \"$T4_NAME\" ]; then\n  T4_WORKFLOW=\"name=$T4_NAME\"\nelse\n  T4_WORKFLOW=\"No failover workflow found\"\nfi\n\n# Get rollout final status\nROLLOUT=$(curl -s --cacert $CA -H \"Authorization: Bearer $TOKEN\" \\\n  \"$K8S/apis/argoproj.io/v1alpha1/namespaces/$NS/rollouts/{{workflow.parameters.rollout-name}}\")\nCOMPACT_R=$(echo \"$ROLLOUT\" | tr -d '\\n' | tr -s ' ')\nROLLOUT_PHASE=$(echo \"$COMPACT_R\" | grep -oE '\"phase\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\nROLLOUT_PHASE=\"${ROLLOUT_PHASE:-?}\"\nROLLOUT_MSG=$(echo \"$COMPACT_R\" | grep -oE '\"message\": *\"[^\"]*\"' | head -1 | sed 's/.*\"\\([^\"]*\\)\"/\\1/')\nROLLOUT_MSG=\"${ROLLOUT_MSG:-}\"\n\nT5=$(date +%s)\n\necho \"  T0 (fault injected):     $T0\"\necho \"  T1 (alert pending):      $T1_PENDING\"\necho \"  T2 (alert firing):       $T2_ALERT\"\necho \"  T4 (failover workflow):  $T4_WORKFLOW\"\necho \"  T5 (collection time):    $T5\"\necho \"\"\n\n# Compute deltas\nif [ \"$T1_PENDING\" != \"N/A\" ]; then\n  DELTA_T0_T1=$((T1_PENDING - T0))\n  echo \"  T0→T1 (fault → alert pending): ${DELTA_T0_T1}s\"\nfi\nif [ \"$T2_ALERT\" != \"N/A\" ]; then\n  DELTA_T0_T2=$((T2_ALERT - T0))\n  echo \"  T0→T2 (fault → alert firing):  ${DELTA_T0_T2}s\"\nfi\nif [ \"$T1_PENDING\" != \"N/A\" ] \u0026\u0026 [ \"$T2_ALERT\" != \"N/A\" ]; then\n  DELTA_T1_T2=$((T2_ALERT - T1_PENDING))\n  echo \"  T1→T2 (pending → firing):      ${DELTA_T1_T2}s\"\nfi\nDELTA_TOTAL=$((T5 - T0))\necho \"  T0→T5 (total experiment):      ${DELTA_TOTAL}s\"\necho \"\"\n\n# Query current error rates from Prometheus\necho \"=== Prometheus Metrics Snapshot ===\"\n\nif [ \"$MODE\" = \"sidecar\" ]; then\n  ERR_Q=\"sum(rate(istio_requests_total{destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",response_code=~\\\"5.*\\\",reporter=\\\"destination\\\"}[1m])) / sum(rate(istio_requests_total{destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",reporter=\\\"destination\\\"}[1m]))\"\n  LAT_Q=\"histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_app=\\\"podinfo\\\",destination_workload_namespace=\\\"$NS\\\",reporter=\\\"destination\\\"}[1m])) by (le))\"\nelse\n  ERR_Q=\"sum(rate(istio_requests_total{destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\",response_code=~\\\"5.*\\\"}[1m])) / sum(rate(istio_requests_total{destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\"}[1m]))\"\n  LAT_Q=\"histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name=\\\"podinfo-stable\\\",destination_service_namespace=\\\"$NS\\\"}[1m])) by (le))\"\nfi\n\nERR_RATE=$(curl -sf \"$PROM/api/v1/query\" --data-urlencode \"query=$ERR_Q\" | \\\n  grep -oE '\"value\":\\[[^,]+,\"[^\"]*\"' | cut -d'\"' -f4 | head -1)\nERR_RATE=\"${ERR_RATE:-no-data}\"\nP99_LAT=$(curl -sf \"$PROM/api/v1/query\" --data-urlencode \"query=$LAT_Q\" | \\\n  grep -oE '\"value\":\\[[^,]+,\"[^\"]*\"' | cut -d'\"' -f4 | head -1)\nP99_LAT=\"${P99_LAT:-no-data}\"\n\necho \"  Stable error rate (1m): $ERR_RATE\"\necho \"  Stable p99 latency (1m): ${P99_LAT}ms\"\necho \"\"\n\necho \"=== Rollout Final State ===\"\necho \"  Phase:   $ROLLOUT_PHASE\"\necho \"  Message: $ROLLOUT_MSG\"\necho \"\"\n\nFAULT_PCT={{workflow.parameters.fault-percentage}}\nFAILOVER_RAN=\"false\"\nif [ -n \"$T4_NAME\" ]; then\n  FAILOVER_RAN=\"true\"\nfi\n\nif [ \"$ROLLOUT_PHASE\" = \"Healthy\" ]; then\n  if [ \"$FAULT_PCT\" -eq 0 ]; then\n    OUTCOME=\"true_negative\"\n    echo \"RESULT: PASS — No fault injected, canary promoted correctly (true negative)\"\n  elif [ \"$FAILOVER_RAN\" = \"true\" ]; then\n    OUTCOME=\"remediated\"\n    echo \"RESULT: PASS — Fault detected, failover promoted canary ($T4_NAME)\"\n  else\n    OUTCOME=\"false_negative\"\n    echo \"RESULT: FAIL — Fault injected but canary was NOT aborted (false negative)\"\n  fi\nelif [ \"$ROLLOUT_PHASE\" = \"Degraded\" ]; then\n  if [ \"$FAULT_PCT\" -eq 0 ]; then\n    OUTCOME=\"false_positive\"\n    echo \"RESULT: FAIL — No fault injected but canary was aborted (false positive)\"\n  else\n    OUTCOME=\"remediated\"\n    echo \"RESULT: PASS — Canary correctly rejected (phase=Degraded)\"\n  fi\nelse\n  OUTCOME=\"incomplete\"\n  echo \"RESULT: INCOMPLETE — Rollout phase=$ROLLOUT_PHASE (expected Healthy or Degraded)\"\nfi\n\necho \"\"\necho \"============================================================\"\n\n# ── Structured JSON output for thesis analysis ──\n# Emit null for N/A values so JSON stays valid\nT1_JSON=\"${T1_PENDING}\"; [ \"$T1_JSON\" = \"N/A\" ] \u0026\u0026 T1_JSON=\"null\"\nT2_JSON=\"${T2_ALERT}\"; [ \"$T2_JSON\" = \"N/A\" ] \u0026\u0026 T2_JSON=\"null\"\nDT01=\"${DELTA_T0_T1:-null}\"\nDT12=\"${DELTA_T1_T2:-null}\"\nDT02=\"${DELTA_T0_T2:-null}\"\ncat \u003e /tmp/timing.json \u003c\u003cENDJSON\n{\n  \"experiment_id\": \"$(cat /proc/sys/kernel/random/uuid 2\u003e/dev/null || echo $RANDOM-$RANDOM)\",\n  \"timestamp\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\",\n  \"mesh_mode\": \"$MODE\",\n  \"fault_percentage\": {{workflow.parameters.fault-percentage}},\n  \"traffic_duration_s\": {{workflow.parameters.traffic-duration}},\n  \"timing\": {\n    \"t0_fault_injected\": $T0,\n    \"t1_alert_pending\": $T1_JSON,\n    \"t2_alert_firing\": $T2_JSON,\n    \"t4_failover_workflow\": \"$T4_WORKFLOW\",\n    \"t5_collection\": $T5\n  },\n  \"deltas_seconds\": {\n    \"t0_to_t1\": $DT01,\n    \"t1_to_t2\": $DT12,\n    \"t0_to_t2\": $DT02,\n    \"t0_to_t5\": $DELTA_TOTAL\n  },\n  \"metrics_snapshot\": {\n    \"stable_error_rate\": \"$ERR_RATE\",\n    \"stable_p99_latency_ms\": \"$P99_LAT\"\n  },\n  \"rollout\": {\n    \"phase\": \"$ROLLOUT_PHASE\",\n    \"message\": \"$ROLLOUT_MSG\"\n  },\n  \"outcome\": \"$OUTCOME\"\n}\nENDJSON\necho \"JSON artifact written to /tmp/timing.json\"\necho \"---TIMING-JSON-START---\"\ncat /tmp/timing.json\necho \"---TIMING-JSON-END---\"\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "cleanup",
+                    "inputs": {},
+                    "outputs": {},
+                    "metadata": {},
+                    "steps": [
+                        [
+                            {
+                                "name": "cleanup-sidecar",
+                                "template": "cleanup-noop",
+                                "arguments": {},
+                                "when": "{{workflow.parameters.mesh-mode}} == sidecar"
+                            },
+                            {
+                                "name": "cleanup-ambient",
+                                "template": "cleanup-noop",
+                                "arguments": {},
+                                "when": "{{workflow.parameters.mesh-mode}} == ambient"
+                            }
+                        ],
+                        [
+                            {
+                                "name": "unenroll-from-mesh",
+                                "template": "label-namespace-ambient",
+                                "arguments": {
+                                    "parameters": [
+                                        {
+                                            "name": "action",
+                                            "value": "remove"
+                                        }
+                                    ]
+                                },
+                                "when": "{{workflow.parameters.mesh-mode}} == ambient"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "name": "cleanup-sidecar-fault",
+                    "inputs": {},
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\nCA=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\nK8S=https://kubernetes.default.svc\nVS=\"$K8S/apis/networking.istio.io/v1beta1/namespaces/podinfo/virtualservices/{{workflow.parameters.rollout-name}}\"\n\necho \"=== onExit: Removing sidecar fault injection ===\"\n\nVS_JSON=$(curl -sf --cacert $CA -H \"Authorization: Bearer $TOKEN\" \"$VS\" 2\u003e/dev/null || echo \"{}\")\nHAS_FAULT=$(echo \"$VS_JSON\" | grep -c '\"fault\"' 2\u003e/dev/null || echo \"0\")\n\nif [ \"$HAS_FAULT\" -gt 0 ]; then\n  HTTP_CODE=$(curl -sf -X PATCH \\\n    --cacert $CA \\\n    -H \"Authorization: Bearer $TOKEN\" \\\n    -H \"Content-Type: application/json-patch+json\" \\\n    \"$VS\" \\\n    -d '[{\"op\":\"remove\",\"path\":\"/spec/http/0/fault\"}]' \\\n    -o /dev/null -w \"%{http_code}\")\n  echo \"Fault removed (HTTP $HTTP_CODE)\"\nelse\n  echo \"No fault found (has_fault=$HAS_FAULT) — nothing to clean up\"\nfi\n"
+                        ],
+                        "resources": {}
+                    }
+                },
+                {
+                    "name": "cleanup-noop",
+                    "inputs": {},
+                    "outputs": {},
+                    "metadata": {},
+                    "container": {
+                        "name": "",
+                        "image": "curlimages/curl:8.11.1",
+                        "command": [
+                            "sh",
+                            "-c"
+                        ],
+                        "args": [
+                            "echo \"=== onExit: No persistent fault to clean up (app-level /status/503) ===\"\necho \"The /status/503 endpoint only affects the request that hits it.\"\n"
+                        ],
+                        "resources": {}
+                    }
+                }
+            ],
+            "entrypoint": "chaos-pipeline",
+            "arguments": {
+                "parameters": [
+                    {
+                        "name": "mesh-mode",
+                        "value": "sidecar"
+                    },
+                    {
+                        "name": "rollout-name",
+                        "value": "podinfo"
+                    },
+                    {
+                        "name": "stable-image",
+                        "value": "ghcr.io/stefanprodan/podinfo:6.5.4"
+                    },
+                    {
+                        "name": "canary-image",
+                        "value": "ghcr.io/stefanprodan/podinfo:6.6.0"
+                    },
+                    {
+                        "name": "fault-percentage",
+                        "value": "80"
+                    },
+                    {
+                        "name": "traffic-duration",
+                        "value": "150"
+                    },
+                    {
+                        "name": "prometheus-url",
+                        "value": "http://grafana-prometheus-stack-k-prometheus.monitoring.svc.cluster.local:9090"
+                    }
+                ]
+            },
+            "serviceAccountName": "podinfo-failover-sa",
+            "onExit": "cleanup",
+            "workflowTemplateRef": {
+                "name": "chaos-experiment"
+            }
+        },
+        "artifactRepositoryRef": {
+            "default": true,
+            "artifactRepository": {}
+        },
+        "artifactGCStatus": {
+            "notSpecified": true
+        }
+    }
+}

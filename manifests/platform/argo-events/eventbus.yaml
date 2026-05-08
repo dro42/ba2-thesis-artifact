@@ -1,0 +1,22 @@
+# EventBus provides the transport layer between EventSources and Sensors
+# Using JetStream with a single replica for resource-constrained Raspberry Pi 5
+apiVersion: argoproj.io/v1alpha1
+kind: EventBus
+metadata:
+  name: default
+  namespace: argo-events
+spec:
+  jetstream:
+    version: latest
+    replicas: 1
+    settings: |
+      max_memory_store: 256Mi
+      max_file_store: 1Gi
+    containerTemplate:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 256Mi

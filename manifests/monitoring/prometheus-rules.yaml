@@ -1,0 +1,148 @@
+# PrometheusRule for podinfo stable health monitoring
+# Dual-signal: triggers Alertmanager webhook when stable error rate exceeds 5%
+# OR stable p99 latency exceeds 2x canary p99, for 1 minute.
+# Supports both Istio sidecar and Istio ambient mesh modes.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: podinfo-stable-health
+  namespace: monitoring
+  labels:
+    # Required by kube-prometheus-stack to pick up PrometheusRules
+    release: monitoring
+    app.kubernetes.io/part-of: podinfo-automation
+spec:
+  groups:
+  - name: podinfo-stable-health
+    interval: 15s
+    rules:
+    # --- Sidecar mode alerts ---
+
+    # Error rate: uses destination_app + namespace (robust across Argo Rollouts
+    # service attribution changes during canary progression).
+    - alert: PodInfoStableHighErrorRate
+      expr: |
+        (
+          sum(rate(istio_requests_total{
+            destination_app="podinfo",
+            destination_workload_namespace="podinfo",
+            response_code=~"5.*",
+            reporter="destination"
+          }[1m]))
+          /
+          sum(rate(istio_requests_total{
+            destination_app="podinfo",
+            destination_workload_namespace="podinfo",
+            reporter="destination"
+          }[1m]))
+        ) > 0.05
+        and
+        sum(rate(istio_requests_total{
+          destination_app="podinfo",
+          destination_workload_namespace="podinfo",
+          reporter="destination"
+        }[1m])) > 0.5
+      for: 1m
+      labels:
+        severity: critical
+        action: failover
+        mesh_mode: sidecar
+      annotations:
+        summary: "PodInfo stable is experiencing high error rate (sidecar mode)"
+        description: >-
+          Istio sidecar reports {{ $value | humanizePercentage }} 5xx error rate
+          on podinfo-stable (threshold: 5%) for 1 minute.
+          Triggering canary failover pipeline.
+
+    # Latency: podinfo p99 > 500ms (absolute threshold, since destination_service
+    # attribution is unreliable during Argo Rollouts canary progression)
+    - alert: PodInfoStableHighLatency
+      expr: |
+        histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{
+          destination_app="podinfo",
+          destination_workload_namespace="podinfo",
+          reporter="destination"
+        }[1m])) by (le)) > 500
+        and
+        sum(rate(istio_requests_total{
+          destination_app="podinfo",
+          destination_workload_namespace="podinfo",
+          reporter="destination"
+        }[1m])) > 0.5
+      for: 1m
+      labels:
+        severity: critical
+        action: failover
+        mesh_mode: sidecar
+      annotations:
+        summary: "PodInfo p99 latency exceeds 500ms (sidecar mode)"
+        description: >-
+          Istio sidecar reports podinfo p99 latency is {{ $value }}ms
+          (threshold: 500ms) for 1 minute. Uses absolute threshold because
+          destination_app label cannot distinguish stable from canary during rollout.
+          Triggering canary failover pipeline.
+
+    # --- Ambient mode alerts ---
+
+    # Error rate: uses service name + namespace labels (no sidecar reporter)
+    - alert: PodInfoAmbientStableHighErrorRate
+      expr: |
+        (
+          sum(rate(istio_requests_total{
+            destination_service_name="podinfo-stable",
+            destination_service_namespace="podinfo-ambient",
+            response_code=~"5.*"
+          }[1m]))
+          /
+          sum(rate(istio_requests_total{
+            destination_service_name="podinfo-stable",
+            destination_service_namespace="podinfo-ambient"
+          }[1m]))
+        ) > 0.05
+        and
+        sum(rate(istio_requests_total{
+          destination_service_name="podinfo-stable",
+          destination_service_namespace="podinfo-ambient"
+        }[1m])) > 0.5
+      for: 1m
+      labels:
+        severity: critical
+        action: failover
+        mesh_mode: ambient
+      annotations:
+        summary: "PodInfo stable is experiencing high error rate (ambient mode)"
+        description: >-
+          Istio ambient/waypoint reports {{ $value | humanizePercentage }} 5xx error rate
+          on podinfo-stable (threshold: 5%) for 1 minute.
+          Triggering ambient canary failover pipeline.
+
+    # Latency: stable p99 > 2x canary p99 (ambient)
+    - alert: PodInfoAmbientStableHighLatency
+      expr: |
+        (
+          histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{
+            destination_service_name="podinfo-stable",
+            destination_service_namespace="podinfo-ambient"
+          }[1m])) by (le))
+          /
+          histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket{
+            destination_service_name="podinfo-canary",
+            destination_service_namespace="podinfo-ambient"
+          }[1m])) by (le))
+        ) > 2
+        and
+        sum(rate(istio_requests_total{
+          destination_service_name="podinfo-stable",
+          destination_service_namespace="podinfo-ambient"
+        }[1m])) > 0.5
+      for: 1m
+      labels:
+        severity: critical
+        action: failover
+        mesh_mode: ambient
+      annotations:
+        summary: "PodInfo stable p99 latency is >2x canary (ambient mode)"
+        description: >-
+          Istio ambient/waypoint reports stable p99 latency is {{ $value }}x the canary p99
+          (threshold: 2x) for 1 minute.
+          Triggering ambient canary failover pipeline.

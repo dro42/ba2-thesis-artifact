@@ -1,0 +1,10 @@
+{
+  "mesh_mode": "ambient",
+  "num_runs": 10,
+  "successes": 10,
+  "failures": 0,
+  "fault_percentage": 80,
+  "traffic_duration_s": 150,
+  "started": "20260403-184055",
+  "completed": "2026-04-03T21:12:08Z"
+}

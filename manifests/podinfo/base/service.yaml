@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo
+  labels:
+    app: podinfo
+    # Tell Consul to ignore this service - use podinfo-stable/canary instead
+    consul.hashicorp.com/service-ignore: "true"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 9898
+    protocol: TCP
+    name: http
+  - port: 9797
+    targetPort: 9797
+    protocol: TCP
+    name: http-metrics
+  - port: 9999
+    targetPort: 9999
+    protocol: TCP
+    name: grpc
+  selector:
+    app: podinfo
+    # NOTE: NO track selector - service routes to both stable and canary
+    # Service mesh handles traffic splitting
