@@ -5,8 +5,7 @@ Companion repository for the bachelor thesis
 > **Sidecar vs. Ambient: Telemetry Reliability and Automated Canary Remediation in a GitOps-Managed Kubernetes Environment**
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-<!-- DOI badge: replace XXXXXXX after the v1.0-thesis-submission tag triggers Zenodo. -->
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+[![DOI](https://zenodo.org/badge/1226512254.svg)](https://doi.org/10.5281/zenodo.20090760)
 
 ## Purpose
 
@@ -71,8 +70,9 @@ Container images point at public registries only (`ghcr.io/stefanprodan/podinfo`
 
 ## Versioning and Reproducibility
 
-- The Git tag `v1.0-thesis-submission` matches the state at the day of thesis submission and is the canonical citation target.
-- Successive bug-fix tags (`v1.0.x`) keep the same Zenodo DOI prefix.
+- The Git tag `v1.0.0` matches the state at the day of thesis submission and is the canonical citation target (Zenodo DOI [10.5281/zenodo.20090760](https://doi.org/10.5281/zenodo.20090760)).
+- The badge above resolves to the *concept* DOI, which always points to the latest version. Cite the version DOI above for a stable, reproducible reference.
+- Successive bug-fix tags (`v1.0.x`) keep the same Zenodo concept DOI; each gets its own version DOI.
 - The full experiment dataset is intentionally NOT in this repo (the `examples/results/` tree shows only one batch per mode); the complete dataset is archived as a separate Zenodo dataset record and linked from the thesis.
 
 ## How to Cite
@@ -86,9 +86,9 @@ If this artifact is useful for your work, please cite the thesis and the artifac
                Canary Remediation in a GitOps-Managed Kubernetes Environment
                -- Thesis Artifact},
   year      = {2026},
-  version   = {v1.0-thesis-submission},
+  version   = {v1.0.0},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.XXXXXXX},
+  doi       = {10.5281/zenodo.20090760},
   url       = {https://github.com/dro42/ba2-thesis-artifact}
 }
 ```
