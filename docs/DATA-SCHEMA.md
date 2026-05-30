@@ -31,7 +31,7 @@ Top-level metadata about the batch.
   "traffic_duration_s_default": 150,
   "git_sha": "<infra-repo SHA at run time>",
   "k8s_version": "v1.30.x",
-  "istio_version": "1.28.3",
+  "istio_version": "1.28.5",
   "podinfo_stable": "v6.5.4",
   "podinfo_canary": "v6.6.0"
 }

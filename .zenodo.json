@@ -1,6 +1,6 @@
 {
   "title": "Sidecar vs. Ambient: Telemetry Reliability and Automated Canary Remediation in a GitOps-Managed Kubernetes Environment - Thesis Artifact",
-  "description": "Companion artifact for the bachelor thesis at Hochschule Campus Wien (BSc Computer Science and Digital Communications, SS 2026). Contains all Argo CD Applications, Argo Rollouts canary definitions, Argo Events EventSources/Sensors, Argo Workflow templates, PrometheusRule alerts, Grafana dashboards, experiment scripts, statistical analysis, and example results that together reproduce the comparative study of Istio sidecar (1.28.3) and Istio ambient (1.29.0) modes on a 2-node k3s cluster.",
+  "description": "Companion artifact for the bachelor thesis at Hochschule Campus Wien (BSc Computer Science and Digital Communications, SS 2026). Contains all Argo CD Applications, Argo Rollouts canary definitions, Argo Events EventSources/Sensors, Argo Workflow templates, PrometheusRule alerts, Grafana dashboards, experiment scripts, statistical analysis, and example results that together reproduce the comparative study of Istio sidecar (1.28.5) and Istio ambient (1.29.1) modes on a 2-node k3s cluster.",
   "creators": [
     {
       "name": "Drozd, Andreas",
@@ -23,6 +23,8 @@
     "reproducibility"
   ],
   "license": "Apache-2.0",
+  "version": "1.0.0",
+  "publication_date": "2026-05-31",
   "upload_type": "software",
   "access_right": "open",
   "language": "eng",

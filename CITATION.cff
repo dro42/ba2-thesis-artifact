@@ -22,7 +22,7 @@ abstract: >-
   templates, PrometheusRule alerts, Grafana dashboards, experiment shell
   scripts, statistical analysis Python scripts, and example experiment
   results that together reproduce the comparative study of Istio sidecar
-  (1.28.3) and Istio ambient (1.29.0) modes on a 2-node k3s cluster.
+  (1.28.5) and Istio ambient (1.29.1) modes on a 2-node k3s cluster.
 keywords:
   - kubernetes
   - service-mesh
@@ -38,7 +38,7 @@ keywords:
   - reproducibility
 license: Apache-2.0
 version: 1.0.0
-date-released: '2026-05-15'
+date-released: '2026-05-31'
 references:
   - type: thesis
     title: >-

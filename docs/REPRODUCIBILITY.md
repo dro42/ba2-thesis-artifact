@@ -20,8 +20,8 @@ The original setup was 2 nodes; a single-node cluster works for smoke testing bu
 | Argo Rollouts | 1.8.4 | Image tag pinned in WorkflowTemplates |
 | Argo Workflows | 3.5+ | Installed via upstream Helm chart |
 | Argo Events | 1.9+ | EventBus uses NATS JetStream (default) |
-| Istio sidecar mode | 1.28.3 | Namespace: `podinfo` |
-| Istio ambient mode | 1.29.0 | Namespace: `podinfo-ambient` (ztunnel + waypoint) |
+| Istio sidecar mode | 1.28.5 | Namespace: `podinfo` |
+| Istio ambient mode | 1.29.1 | Namespace: `podinfo-ambient` (ztunnel + waypoint) |
 | kube-prometheus-stack | 65.x | Helm release name **must** match the `prometheus-url` parameter (see below) |
 | Loki / Tempo / Pyroscope | (current) | Optional for traces and profiles dashboards |
 | podinfo | v6.5.4 (stable), v6.6.0 (canary) | `ghcr.io/stefanprodan/podinfo` |
