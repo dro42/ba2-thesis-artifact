@@ -34,7 +34,7 @@ podinfo
 Istio
   Project: https://istio.io
   License: Apache-2.0 (https://github.com/istio/istio/blob/master/LICENSE)
-  Used as: service mesh (sidecar 1.28.3, ambient 1.29.0) installed via
+  Used as: service mesh (sidecar 1.28.5, ambient 1.29.1) installed via
            upstream Helm charts; no Istio source is redistributed here.
 
 Argo Rollouts, Argo Workflows, Argo Events

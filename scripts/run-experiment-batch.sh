@@ -101,7 +101,7 @@ for i in $(seq 1 "$NUM_RUNS"); do
 
   # Tier 2: inline artifact from workflow JSON
   if [ "$TIMING_EXTRACTED" = false ]; then
-    python3 -c "
+    if python3 -c "
 import sys, json
 wf = json.load(open('$OUTDIR/run-${i}-workflow.json'))
 for nid, node in wf.get('status',{}).get('nodes',{}).items():
@@ -116,12 +116,12 @@ for nid, node in wf.get('status',{}).get('nodes',{}).items():
                     json.dump(parsed, open('$OUTDIR/run-${i}-timing.json','w'), indent=2)
                     print('  Timing extracted from inline artifact')
                     sys.exit(0)
-" 2>/dev/null && TIMING_EXTRACTED=true || true
+" 2>/dev/null; then TIMING_EXTRACTED=true; fi
   fi
 
   # Tier 3: extract JSON between delimiters from saved logs
   if [ "$TIMING_EXTRACTED" = false ] && [ -f "$OUTDIR/run-${i}-log.txt" ]; then
-    python3 -c "
+    if python3 -c "
 import json, re
 with open('$OUTDIR/run-${i}-log.txt') as f:
     log = f.read()
@@ -134,12 +134,12 @@ if match:
     print('  Timing extracted from saved logs')
     exit(0)
 exit(1)
-" 2>/dev/null && TIMING_EXTRACTED=true || true
+" 2>/dev/null; then TIMING_EXTRACTED=true; fi
   fi
 
   # Tier 4: parse human-readable timing lines from saved logs
   if [ "$TIMING_EXTRACTED" = false ] && [ -f "$OUTDIR/run-${i}-log.txt" ]; then
-    python3 -c "
+    if python3 -c "
 import json, re
 with open('$OUTDIR/run-${i}-log.txt') as f:
     log = f.read()
@@ -190,7 +190,7 @@ if t0 and t5:
     print('  Timing extracted from human-readable log')
     exit(0)
 exit(1)
-" 2>/dev/null && TIMING_EXTRACTED=true || true
+" 2>/dev/null; then TIMING_EXTRACTED=true; fi
   fi
 
   # Determine outcome — 3-tier fallback

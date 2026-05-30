@@ -25,9 +25,8 @@ fi
 MODE="$1"
 
 case "$MODE" in
-  sidecar)  APP_NS="podinfo" ;;
-  ambient)  APP_NS="podinfo-ambient" ;;
-  *)        echo "Error: mode must be 'sidecar' or 'ambient'" >&2; usage ;;
+  sidecar|ambient) ;;
+  *) echo "Error: mode must be 'sidecar' or 'ambient'" >&2; usage ;;
 esac
 
 # ---------------------------------------------------------------------------

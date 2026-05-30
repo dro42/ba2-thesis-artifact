@@ -38,13 +38,13 @@ For the design rationale (why a parallel BA2 application tree, why auto-sync on 
 modes/none            <- safe / clean state, no mesh, no podinfo
    |
    v
-modes/istio-sidecar   <- Istio 1.28.3 sidecar mode + podinfo overlay
+modes/istio-sidecar   <- Istio 1.28.5 sidecar mode + podinfo overlay
    |
    v
 modes/none            <- prune sidecar + ambient leftovers
    |
    v
-modes/istio-ambient   <- Istio 1.29.0 ambient mode (ztunnel + waypoint) + podinfo overlay
+modes/istio-ambient   <- Istio 1.29.1 ambient mode (ztunnel + waypoint) + podinfo overlay
 ```
 
 The transition through `modes/none` is mandatory; ArgoCD prune is enabled to ensure CNI, sidecar injectors, and ztunnel are fully removed before the next mode bootstraps. The `experiments/common/cleanup-check/` PreSync hook aborts a sync if leftover CRDs are still bound.
